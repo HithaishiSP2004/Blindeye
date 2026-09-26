@@ -1,4 +1,5 @@
 import pytest
+from backend.core.config import settings
 from backend.models.qa import AnswerStatus, EvidenceCitation
 from backend.retrieval.constrained_generator import (
     DeterministicGenerator,
@@ -54,8 +55,9 @@ async def test_deterministic_generator_refused(deterministic_gen):
 
 
 @pytest.mark.asyncio
-async def test_gemini_generator_fallback_without_live_key(gemini_gen):
+async def test_gemini_generator_fallback_without_live_key(gemini_gen, monkeypatch):
     # Without live API key, GeminiGenerator cleanly falls back to deterministic path
+    monkeypatch.setattr(settings, "GEMINI_API_KEY", "")
     cit = EvidenceCitation(
         clause_id="c_1",
         clause_number="1",
@@ -68,3 +70,4 @@ async def test_gemini_generator_fallback_without_live_key(gemini_gen):
         status=AnswerStatus.ANSWERED,
     )
     assert "11 months" in ans
+

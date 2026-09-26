@@ -84,7 +84,7 @@ class QueryRouter:
         clean = question.strip()
         lower_q = clean.lower()
 
-        # 1. Check for prompt injection / instruction-override directives (Correction 2 Hardening)
+        # 1. Check for prompt injection / instruction-override directives (Hardening Correction 2)
         # Treat instruction-like text as untrusted. Neutralize directive content while extracting legitimate inquiry.
         has_injection = bool(RE_INJECTION.search(lower_q))
         if has_injection:
@@ -99,11 +99,15 @@ class QueryRouter:
                 clean = inquiry
                 lower_q = clean.lower()
             else:
-                if "rent" in lower_q:
-                    clean = "What is the monthly rent?"
-                    lower_q = clean.lower()
-                elif "deposit" in lower_q:
-                    clean = "How much is the security deposit?"
+                # If only untrusted directives and target concepts were present, extract the underlying document concept
+                # rather than silently fabricating a canned question.
+                found_topic = None
+                for topic in ["rent", "security deposit", "deposit", "notice period", "lock-in", "maintenance", "tenure"]:
+                    if topic in lower_q:
+                        found_topic = topic
+                        break
+                if found_topic:
+                    clean = found_topic
                     lower_q = clean.lower()
                 else:
                     return QueryRouteResult(
