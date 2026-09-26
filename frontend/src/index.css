@@ -1,0 +1,170 @@
+/* ==========================================================================
+   Editorial Legal Intelligence × Digital Paper × Cinematic Evidence
+   Phase 2 Visual Foundation Design System
+   ========================================================================== */
+
+:root {
+  /* Typography Stacks */
+  --font-serif: 'Newsreader', Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Editorial Light Palette: Archival Paper & Warm Ink */
+  --canvas-bg: #FBF9F5;
+  --surface-bg: #F2EFE9;
+  --sheet-bg: #FFFFFF;
+  --sheet-border: #E8E3DA;
+  --ink-primary: #1A1917;
+  --ink-secondary: #5C5852;
+  --ink-tertiary: #8A857D;
+  --divider-line: #E5E0D8;
+  --divider-soft: #EFECE6;
+
+  /* Warm Legal Amber / Bronze Accent */
+  --accent-legal: #8F5B23;
+  --accent-soft: rgba(143, 91, 35, 0.08);
+  --accent-glow: rgba(143, 91, 35, 0.16);
+  --accent-border: rgba(143, 91, 35, 0.40);
+
+  /* Status Colors (Double-Coded with Typography & Symbols) */
+  --status-available: #1E6B38;
+  --status-available-bg: rgba(30, 107, 56, 0.08);
+  --status-warning: #92400E;
+  --status-warning-bg: rgba(146, 64, 14, 0.08);
+  --status-alert: #991B1B;
+  --status-alert-bg: rgba(153, 27, 27, 0.08);
+
+  /* Physical Paper Material Depth */
+  --sheet-shadow: 0 1px 3px rgba(26, 25, 23, 0.04), 0 10px 30px rgba(26, 25, 23, 0.06);
+  --panel-shadow: 0 1px 2px rgba(26, 25, 23, 0.02);
+}
+
+/* Editorial Dark Palette: Charcoal Reading Room & Warm Ivory */
+[data-theme='dark'] {
+  --canvas-bg: #141413;
+  --surface-bg: #1D1C1B;
+  --sheet-bg: #1A1918;
+  --sheet-border: #2E2C2A;
+  --ink-primary: #EDEAE4;
+  --ink-secondary: #949089;
+  --ink-tertiary: #6E6B65;
+  --divider-line: #2E2C2A;
+  --divider-soft: #242322;
+
+  /* Burnished Brass / Gold Accent */
+  --accent-legal: #D49755;
+  --accent-soft: rgba(212, 151, 85, 0.10);
+  --accent-glow: rgba(212, 151, 85, 0.22);
+  --accent-border: rgba(212, 151, 85, 0.50);
+
+  /* Status Colors */
+  --status-available: #4ADE80;
+  --status-available-bg: rgba(74, 222, 128, 0.10);
+  --status-warning: #FBBF24;
+  --status-warning-bg: rgba(251, 191, 36, 0.10);
+  --status-alert: #F87171;
+  --status-alert-bg: rgba(248, 113, 113, 0.10);
+
+  /* Dark Room Shadows */
+  --sheet-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 16px 40px rgba(0, 0, 0, 0.5);
+  --panel-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Global Reset & Base Typography */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--canvas-bg);
+  color: var(--ink-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar for Editorial Look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--divider-line);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-tertiary);
+}
+
+/* Typography Utility Classes */
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Editorial Button Styles */
+button {
+  font-family: var(--font-sans);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: all 0.18s ease;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent-legal);
+  outline-offset: 2px;
+}
+
+/* Paper Sheet Simulation with native container query support */
+.paper-sheet {
+  background: var(--sheet-bg);
+  border: 1px solid var(--sheet-border);
+  box-shadow: var(--sheet-shadow);
+  border-radius: 2px;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
+  container-type: inline-size;
+}
+
+/* Interactive Clause Highlight in Document */
+.clause-block-highlight {
+  position: absolute;
+  transition: background-color 0.15s ease, opacity 0.2s ease;
+  border-left: 2px solid transparent;
+  padding: 1px 3px;
+  box-sizing: border-box;
+}
+
+.clause-block-highlight.is-hovered {
+  background-color: var(--accent-soft);
+  border-left-color: var(--accent-legal);
+}
+
+.clause-block-highlight.is-selected {
+  background-color: var(--accent-glow);
+  border-left-color: var(--accent-legal);
+}
+
+/* Subdued dimming effect on unselected blocks when an evidence source is focused */
+.document-surface.has-active-selection .clause-block-highlight:not(.is-selected):not(.is-hovered) {
+  opacity: 0.68;
+  filter: grayscale(12%);
+  transition: opacity 0.2s ease;
+}
