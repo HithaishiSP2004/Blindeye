@@ -133,6 +133,23 @@ export default function App() {
     }
   };
 
+  const handleLoadAdversarialAgreement = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/adversarial_injection.pdf');
+      if (!res.ok) {
+        throw new Error('Adversarial fixture PDF not found in static assets.');
+      }
+      const blob = await res.blob();
+      const file = new File([blob], 'adversarial_injection.pdf', { type: 'application/pdf' });
+      await handleParseFile(file);
+    } catch (err) {
+      setError(err.message || 'Failed to load adversarial agreement.');
+      setLoading(false);
+    }
+  };
+
   const handleSelectFact = (fieldKey, item) => {
     if (activeFactField === fieldKey) {
       setActiveFactField(null);
@@ -241,6 +258,7 @@ export default function App() {
         onParseFile={handleParseFile}
         onLoadGolden={handleLoadGoldenAgreement}
         onLoadConflicting={handleLoadConflictingAgreement}
+        onLoadAdversarial={handleLoadAdversarialAgreement}
         loading={loading}
         loadingStage={loadingStage}
         error={error}

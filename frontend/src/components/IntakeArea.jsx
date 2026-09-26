@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflicting, loading, loadingStage, error }) {
+export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflicting, onLoadAdversarial, loading, loadingStage, error }) {
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleDrop = (e) => {
@@ -215,6 +215,32 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
             >
               <span>Load Divergent Covenants (Conflicting Terms)</span>
               <span style={{ color: 'var(--accent-legal)', fontSize: '11px' }}>≠</span>
+            </button>
+          )}
+
+          {/* Quick-Load Adversarial Injection Agreement Button (Phase 9) */}
+          {onLoadAdversarial && (
+            <button
+              onClick={onLoadAdversarial}
+              disabled={loading}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 18px',
+                backgroundColor: 'var(--sheet-bg)',
+                border: '1px solid rgba(225, 29, 72, 0.3)',
+                borderRadius: '2px',
+                fontSize: '12px',
+                fontWeight: 500,
+                color: 'var(--ink-primary)',
+                boxShadow: 'var(--panel-shadow)',
+                opacity: loading ? 0.6 : 1,
+                cursor: 'pointer',
+              }}
+            >
+              <span>Load Adversarial Injection Fixture</span>
+              <span style={{ color: '#e11d48', fontSize: '11px', fontWeight: 700 }}>🛡️</span>
             </button>
           )}
         </div>
