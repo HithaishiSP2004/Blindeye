@@ -265,8 +265,10 @@ export default function App() {
       />
 
       {/* Main Editorial Workspace: 58% Document Surface / 42% Evidence Panel */}
-      <div
+      <main
         className="workspace-layout"
+        role="main"
+        aria-label="Agreement Workspace"
         style={{
           display: 'flex',
           flex: 1,
@@ -330,7 +332,7 @@ export default function App() {
             advocatePackData={advocatePackData}
           />
         </div>
-      </div>
+      </main>
 
     </div>
   );

@@ -129,8 +129,12 @@ export default function EvidencePanel({
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div role="tablist" aria-label="Agreement Analysis Views" style={{ display: 'flex', gap: '8px' }}>
             <button
+              id="tab-facts"
+              role="tab"
+              aria-selected={activeTab === 'facts'}
+              aria-controls="panel-facts"
               onClick={() => setActiveTab('facts')}
               style={{
                 fontSize: '11px',
@@ -150,6 +154,9 @@ export default function EvidencePanel({
             </button>
             <button
               id="tab-clauses"
+              role="tab"
+              aria-selected={activeTab === 'clauses'}
+              aria-controls="panel-clauses"
               onClick={() => setActiveTab('clauses')}
               style={{
                 fontSize: '11px',
@@ -169,6 +176,9 @@ export default function EvidencePanel({
             </button>
             <button
               id="tab-qa"
+              role="tab"
+              aria-selected={activeTab === 'qa'}
+              aria-controls="panel-qa"
               onClick={() => setActiveTab('qa')}
               style={{
                 fontSize: '11px',
@@ -188,6 +198,9 @@ export default function EvidencePanel({
             </button>
             <button
               id="tab-contradictions"
+              role="tab"
+              aria-selected={activeTab === 'contradictions'}
+              aria-controls="panel-contradictions"
               onClick={() => setActiveTab('contradictions')}
               style={{
                 fontSize: '11px',
@@ -225,6 +238,9 @@ export default function EvidencePanel({
             </button>
             <button
               id="tab-advocate-pack"
+              role="tab"
+              aria-selected={activeTab === 'advocate-pack'}
+              aria-controls="panel-advocate-pack"
               onClick={() => setActiveTab('advocate-pack')}
               style={{
                 fontSize: '11px',
@@ -348,6 +364,7 @@ export default function EvidencePanel({
               <button
                 key={chip.id}
                 onClick={() => setStatusFilter(chip.id)}
+                aria-pressed={statusFilter === chip.id}
                 style={{
                   fontSize: '9.5px',
                   fontWeight: 600,
@@ -370,7 +387,12 @@ export default function EvidencePanel({
 
       {/* VIEW 1: STRUCTURED FACTS LIST */}
       {activeTab === 'facts' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div
+          id="panel-facts"
+          role="tabpanel"
+          aria-labelledby="tab-facts"
+          style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
+        >
           {FACT_GROUPS.map((group) => {
             const visibleFields = group.fields.filter(matchesFilter);
             if (visibleFields.length === 0) return null;
@@ -415,22 +437,17 @@ export default function EvidencePanel({
               </div>
             );
           })}
-
-          {/* Integrated Research Desk below Facts (Correction 22) */}
-          <div style={{ marginTop: '20px' }}>
-
-            <QuestionDesk
-              rawFile={rawFile}
-              documentData={documentData}
-              onNavigateToCitation={onNavigateToCitation}
-            />
-          </div>
         </div>
       )}
 
       {/* VIEW 2: CLAUSE EVIDENCE INDEX */}
       {activeTab === 'clauses' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div
+          id="panel-clauses"
+          role="tabpanel"
+          aria-labelledby="tab-clauses"
+          style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
+        >
           {substantiveClauses.map((clause) => {
             const isActive = activeClauseId === clause.clause_id;
             const isHovered = hoveredClauseId === clause.clause_id;
@@ -439,7 +456,17 @@ export default function EvidencePanel({
             return (
               <div
                 key={clause.clause_id}
+                role="button"
+                tabIndex={0}
+                aria-pressed={isActive}
+                aria-label={`Clause ${clause.clause_number}: ${clause.title || ''}, page ${clause.pages.join(', ')}`}
                 onClick={() => onSelectClause(isActive ? null : clause.clause_id)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectClause(isActive ? null : clause.clause_id);
+                  }
+                }}
                 onMouseEnter={() => onHoverClause(clause.clause_id)}
                 onMouseLeave={() => onHoverClause(null)}
                 style={{
@@ -515,9 +542,14 @@ export default function EvidencePanel({
         </div>
       )}
 
-      {/* VIEW 3: DEDICATED Q&A RESEARCH DESK (Correction 21 & 22) */}
+      {/* VIEW 3: DEDICATED Q&A RESEARCH DESK */}
       {activeTab === 'qa' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div
+          id="panel-qa"
+          role="tabpanel"
+          aria-labelledby="tab-qa"
+          style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+        >
           <QuestionDesk
             rawFile={rawFile}
             documentData={documentData}
@@ -526,21 +558,33 @@ export default function EvidencePanel({
         </div>
       )}
 
-      {/* VIEW 4: CONTRADICTION & EVIDENCE RELATIONSHIPS (Phase 6) */}
+      {/* VIEW 4: CONTRADICTION & EVIDENCE RELATIONSHIPS */}
       {activeTab === 'contradictions' && (
-        <ContradictionPanel
-          contradictionData={contradictionData}
-          onSelectSource={onSelectContradictionSource}
-          selectedSource={selectedContradictionSource}
-        />
+        <div
+          id="panel-contradictions"
+          role="tabpanel"
+          aria-labelledby="tab-contradictions"
+        >
+          <ContradictionPanel
+            contradictionData={contradictionData}
+            onSelectSource={onSelectContradictionSource}
+            selectedSource={selectedContradictionSource}
+          />
+        </div>
       )}
 
-      {/* VIEW 5: ADVOCATE PREPARATION PACK & EVIDENTIARY DOSSIER (Phase 8) */}
+      {/* VIEW 5: ADVOCATE PREPARATION PACK & EVIDENTIARY DOSSIER */}
       {activeTab === 'advocate-pack' && (
-        <AdvocatePackPanel
-          advocatePack={advocatePackData}
-          onNavigateToCitation={onNavigateToCitation}
-        />
+        <div
+          id="panel-advocate-pack"
+          role="tabpanel"
+          aria-labelledby="tab-advocate-pack"
+        >
+          <AdvocatePackPanel
+            advocatePack={advocatePackData}
+            onNavigateToCitation={onNavigateToCitation}
+          />
+        </div>
       )}
     </div>
   );

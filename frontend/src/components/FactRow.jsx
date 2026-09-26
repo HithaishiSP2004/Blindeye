@@ -227,7 +227,17 @@ export default function FactRow({
   return (
     <div
       id={`fact-row-${fieldKey}`}
+      role="button"
+      tabIndex={0}
+      aria-pressed={isActive}
+      aria-label={`View evidence for ${label}: ${displayValue || 'Not established in document'}`}
       onClick={() => onSelectFact(fieldKey, fact || claim)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelectFact(fieldKey, fact || claim);
+        }
+      }}
       onMouseEnter={() => onHoverFact(fieldKey)}
       onMouseLeave={() => onHoverFact(null)}
       style={{
@@ -382,12 +392,16 @@ export default function FactRow({
       {/* Verification Audit Trail Toggle (Phase 4 Observability) */}
       {verification && (
         <div style={{ marginTop: '4px', borderTop: '1px dashed var(--divider-line)', paddingTop: '4px' }}>
-          <div
+          <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               setShowAudit((prev) => !prev);
             }}
+            aria-expanded={showAudit}
+            aria-label={`Toggle verification audit trail for ${label}`}
             style={{
+              width: '100%',
               fontSize: '9px',
               fontWeight: 600,
               letterSpacing: '0.06em',
@@ -397,13 +411,16 @@ export default function FactRow({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
+              padding: '2px 0',
+              background: 'none',
+              border: 'none',
             }}
           >
             <span>
               Audit Trail: {verification.resolution_method || 'DETERMINISTIC_CHECK'}
             </span>
             <span style={{ fontSize: '10px' }}>{showAudit ? '▲' : '▼'}</span>
-          </div>
+          </button>
 
           {showAudit && (
             <div

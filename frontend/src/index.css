@@ -15,8 +15,8 @@
   --sheet-bg: #FFFFFF;
   --sheet-border: #E8E3DA;
   --ink-primary: #1A1917;
-  --ink-secondary: #5C5852;
-  --ink-tertiary: #8A857D;
+  --ink-secondary: #4A4640;
+  --ink-tertiary: #68635B;
   --divider-line: #E5E0D8;
   --divider-soft: #EFECE6;
 
@@ -46,8 +46,8 @@
   --sheet-bg: #1A1918;
   --sheet-border: #2E2C2A;
   --ink-primary: #EDEAE4;
-  --ink-secondary: #949089;
-  --ink-tertiary: #6E6B65;
+  --ink-secondary: #A8A49D;
+  --ink-tertiary: #9E9A93;
   --divider-line: #2E2C2A;
   --divider-soft: #242322;
 
@@ -172,9 +172,26 @@ button:focus-visible {
 /* Accessibility Focus Visible */
 a:focus-visible,
 input:focus-visible,
-button:focus-visible {
-  outline: 2px solid var(--accent-legal);
-  outline-offset: 2px;
+button:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible,
+[tabindex="0"]:focus-visible,
+label:focus-within {
+  outline: 2px solid var(--accent-legal) !important;
+  outline-offset: 2px !important;
+}
+
+/* Screen reader only utility */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
 
 /* Respect user preference for reduced motion */

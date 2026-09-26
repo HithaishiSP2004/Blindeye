@@ -111,6 +111,7 @@ export default function QuestionDesk({
               setCurrentResponse(null);
               setQuestion('');
             }}
+            aria-label="Clear research inquiry and current response"
             style={{
               fontSize: '11px',
               color: 'var(--ink-tertiary)',
@@ -127,12 +128,16 @@ export default function QuestionDesk({
 
       {/* Query Input Bar */}
       <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px' }}>
+        <label htmlFor="qa-question-input" className="sr-only">
+          Ask agreement question
+        </label>
         <input
           id="qa-question-input"
           type="text"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           placeholder="Ask e.g. 'What is the monthly rent?' or 'What does Clause 3 say?'"
+          aria-label="Ask agreement question"
           disabled={loading || !rawFile}
           style={{
             flex: 1,
@@ -152,6 +157,7 @@ export default function QuestionDesk({
         <button
           id="qa-submit-btn"
           type="submit"
+          aria-label="Submit question to agreement"
           disabled={loading || !question.trim() || !rawFile}
           style={{
             padding: '9px 18px',
@@ -258,6 +264,8 @@ export default function QuestionDesk({
       {/* Error Banner */}
       {error && (
         <div
+          role="alert"
+          aria-live="assertive"
           style={{
             fontSize: '12px',
             color: 'var(--status-alert)',
@@ -271,12 +279,14 @@ export default function QuestionDesk({
         </div>
       )}
 
-      {/* Verified Answer Presentation */}
+      {/* Verified Answer Presentation with polite live announcement */}
       {currentResponse && (
-        <VerifiedAnswer
-          response={currentResponse}
-          onViewSource={(cit) => onNavigateToCitation && onNavigateToCitation(cit)}
-        />
+        <div role="region" aria-live="polite" aria-label="Verified Agreement Answer">
+          <VerifiedAnswer
+            response={currentResponse}
+            onViewSource={(cit) => onNavigateToCitation && onNavigateToCitation(cit)}
+          />
+        </div>
       )}
     </div>
   );

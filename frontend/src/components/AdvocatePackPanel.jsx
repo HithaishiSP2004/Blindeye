@@ -213,6 +213,7 @@ export default function AdvocatePackPanel({
         <button
           onClick={handlePrint}
           className="no-print"
+          aria-label="Print or export archival evidentiary agreement review dossier"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -796,6 +797,7 @@ export default function AdvocatePackPanel({
                 <button
                   onClick={() => handleCitationClick(fn.index)}
                   className="no-print"
+                  aria-label={`Locate footnote [${fn.index}] on page ${fn.page_number} in document`}
                   style={{
                     border: 'none',
                     background: 'none',
@@ -803,7 +805,7 @@ export default function AdvocatePackPanel({
                     fontWeight: 600,
                     cursor: 'pointer',
                     fontSize: '11px',
-                    padding: 0,
+                    padding: '2px 4px',
                     textDecoration: 'underline',
                   }}
                 >

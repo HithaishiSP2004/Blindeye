@@ -83,15 +83,23 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
           className="intake-buttons-group"
           style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}
         >
-          {/* Physical Drop Target */}
+          {/* Physical Drop Target & Accessible File Upload */}
           <label
-            aria-label="Upload PDF Agreement"
+            role="button"
+            tabIndex={0}
+            aria-label="Upload PDF Agreement, maximum 15 megabytes"
             onDragOver={(e) => {
               e.preventDefault();
               setIsDragOver(true);
             }}
             onDragLeave={() => setIsDragOver(false)}
             onDrop={handleDrop}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                document.getElementById('hidden-pdf-upload')?.click();
+              }
+            }}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -106,6 +114,7 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
             }}
           >
             <input
+              id="hidden-pdf-upload"
               type="file"
               accept=".pdf,application/pdf"
               onChange={handleFileInput}
@@ -135,9 +144,11 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
             </span>
           </label>
 
-          {/* Stepped Observable Loading Stage (Amendment 1) */}
+          {/* Stepped Observable Loading Stage with accessible status region */}
           {loadingStage && (
             <div
+              role="status"
+              aria-live="polite"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -177,6 +188,7 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
           <button
             onClick={onLoadGolden}
             disabled={loading}
+            aria-label="Load Golden Agreement: Bangalore 11-month residential lease fixture"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -202,6 +214,7 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
             <button
               onClick={onLoadConflicting}
               disabled={loading}
+              aria-label="Load Divergent Covenants: conflicting contractual terms fixture"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -223,11 +236,12 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
             </button>
           )}
 
-          {/* Quick-Load Adversarial Injection Agreement Button (Phase 9) */}
+          {/* Quick-Load Adversarial Injection Agreement Button */}
           {onLoadAdversarial && (
             <button
               onClick={onLoadAdversarial}
               disabled={loading}
+              aria-label="Load Adversarial Injection Fixture: prompt injection evaluation fixture"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -253,6 +267,8 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
 
       {error && (
         <div
+          role="alert"
+          aria-live="assertive"
           style={{
             marginTop: '16px',
             padding: '10px 14px',

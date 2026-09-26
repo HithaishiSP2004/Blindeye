@@ -174,19 +174,23 @@ export default function ContradictionCard({ finding, onSelectSource, selectedSou
           <button
             type="button"
             onClick={() => onSelectSource(finding.source_a)}
+            aria-label={`View Source A: ${finding.source_a.clause_number ? `Clause ${finding.source_a.clause_number}` : 'Passage A'} on Page ${finding.source_a.page_number}`}
             style={{
               marginTop: '10px',
-              fontSize: '10.5px',
+              fontSize: '11px',
               fontWeight: 600,
               color: 'var(--accent-legal)',
-              background: 'none',
-              border: 'none',
-              padding: 0,
+              backgroundColor: 'var(--canvas-bg)',
+              border: '1px solid var(--divider-line)',
+              padding: '6px 12px',
+              borderRadius: '3px',
+              minHeight: '34px',
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '4px',
+              gap: '6px',
               alignSelf: 'flex-start',
+              transition: 'all 120ms ease',
             }}
           >
             <span>⌖ View source A</span>
@@ -257,19 +261,23 @@ export default function ContradictionCard({ finding, onSelectSource, selectedSou
           <button
             type="button"
             onClick={() => onSelectSource(finding.source_b)}
+            aria-label={`View Source B: ${finding.source_b.clause_number ? `Clause ${finding.source_b.clause_number}` : 'Passage B'} on Page ${finding.source_b.page_number}`}
             style={{
               marginTop: '10px',
-              fontSize: '10.5px',
+              fontSize: '11px',
               fontWeight: 600,
               color: 'var(--accent-legal)',
-              background: 'none',
-              border: 'none',
-              padding: 0,
+              backgroundColor: 'var(--canvas-bg)',
+              border: '1px solid var(--divider-line)',
+              padding: '6px 12px',
+              borderRadius: '3px',
+              minHeight: '34px',
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '4px',
+              gap: '6px',
               alignSelf: 'flex-start',
+              transition: 'all 120ms ease',
             }}
           >
             <span>⌖ View source B</span>
