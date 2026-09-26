@@ -50,6 +50,17 @@ from backend.models.contradiction import (
     ContradictionSubject,
 )
 
+from backend.models.advocate_pack import (
+    AdvocatePack,
+    AdvocatePackItem,
+    CoverageGapItem,
+    DiscrepancyItem,
+    EvidenceClassification,
+    ExecutiveSummary,
+    FinancialCovenantRow,
+    ProvenanceFootnote,
+)
+
 __all__ = [
     "BoundingBox",
     "TextSpan",
@@ -90,5 +101,13 @@ __all__ = [
     "ContradictionEvidence",
     "ContradictionFinding",
     "ContradictionResponse",
+    "EvidenceClassification",
+    "ProvenanceFootnote",
+    "AdvocatePackItem",
+    "ExecutiveSummary",
+    "FinancialCovenantRow",
+    "DiscrepancyItem",
+    "CoverageGapItem",
+    "AdvocatePack",
 ]
 

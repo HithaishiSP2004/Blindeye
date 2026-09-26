@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import FactRow from './FactRow';
 import QuestionDesk from './QuestionDesk';
 import ContradictionPanel from './ContradictionPanel';
+import AdvocatePackPanel from './AdvocatePackPanel';
 
 const FACT_GROUPS = [
   {
@@ -39,8 +40,9 @@ export default function EvidencePanel({
   contradictionData,
   selectedContradictionSource,
   onSelectContradictionSource,
+  advocatePackData,
 }) {
-  const [activeTab, setActiveTab] = useState('facts'); // 'facts', 'clauses', 'qa', or 'contradictions'
+  const [activeTab, setActiveTab] = useState('facts'); // 'facts', 'clauses', 'qa', 'contradictions', or 'advocate-pack'
   const [statusFilter, setStatusFilter] = useState('ALL'); // 'ALL', 'VERIFIED', 'NOT_FOUND', 'UNSUPPORTED', 'AMBIGUOUS'
 
 
@@ -218,6 +220,43 @@ export default function EvidencePanel({
                   }}
                 >
                   {contradictionData.total_conflicts}
+                </span>
+              )}
+            </button>
+            <button
+              id="tab-advocate-pack"
+              onClick={() => setActiveTab('advocate-pack')}
+              style={{
+                fontSize: '11px',
+                fontWeight: 600,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                padding: '6px 14px',
+                borderRadius: '3px',
+                border: activeTab === 'advocate-pack' ? '1px solid var(--accent-legal)' : '1px solid var(--divider-line)',
+                backgroundColor: activeTab === 'advocate-pack' ? 'var(--accent-legal)' : 'var(--surface-bg)',
+                color: activeTab === 'advocate-pack' ? '#FFFFFF' : 'var(--ink-secondary)',
+                cursor: 'pointer',
+                transition: 'all 120ms ease',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              Advocate Pack
+              {advocatePackData && (
+                <span
+                  style={{
+                    backgroundColor: activeTab === 'advocate-pack' ? 'rgba(255, 255, 255, 0.25)' : 'rgba(180, 83, 9, 0.15)',
+                    color: activeTab === 'advocate-pack' ? '#FFFFFF' : 'var(--accent-legal)',
+                    borderRadius: '10px',
+                    padding: '1px 6px',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    border: '1px solid var(--accent-border)',
+                  }}
+                >
+                  DOSSIER
                 </span>
               )}
             </button>
@@ -493,6 +532,14 @@ export default function EvidencePanel({
           contradictionData={contradictionData}
           onSelectSource={onSelectContradictionSource}
           selectedSource={selectedContradictionSource}
+        />
+      )}
+
+      {/* VIEW 5: ADVOCATE PREPARATION PACK & EVIDENTIARY DOSSIER (Phase 8) */}
+      {activeTab === 'advocate-pack' && (
+        <AdvocatePackPanel
+          advocatePack={advocatePackData}
+          onNavigateToCitation={onNavigateToCitation}
         />
       )}
     </div>

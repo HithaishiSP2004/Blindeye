@@ -3,7 +3,7 @@ import Header from './components/Header';
 import IntakeArea from './components/IntakeArea';
 import DocumentSurface from './components/DocumentSurface';
 import EvidencePanel from './components/EvidencePanel';
-import { extractDocument, verifyDocument, detectContradictions } from './api/client';
+import { extractDocument, verifyDocument, detectContradictions, generateAdvocatePack } from './api/client';
 
 export default function App() {
   const [theme, setTheme] = useState('light');
@@ -13,6 +13,7 @@ export default function App() {
   const [verificationResult, setVerificationResult] = useState(null);
   const [contradictionData, setContradictionData] = useState(null);
   const [selectedContradictionSource, setSelectedContradictionSource] = useState(null);
+  const [advocatePackData, setAdvocatePackData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingStage, setLoadingStage] = useState(null);
   const [error, setError] = useState(null);
@@ -49,16 +50,21 @@ export default function App() {
 
       // Step 2: Index evidence & evaluate relationships
       setLoadingStage('INDEXING EVIDENCE');
-      const [verifyResult, contradictionResult] = await Promise.all([
+      const [verifyResult, contradictionResult, advocatePackResult] = await Promise.all([
         verifyDocument(file),
         detectContradictions(file).catch((cErr) => {
           console.warn('Contradiction analysis note:', cErr);
+          return null;
+        }),
+        generateAdvocatePack(file).catch((pErr) => {
+          console.warn('Advocate pack generation note:', pErr);
           return null;
         }),
       ]);
 
       setVerificationResult(verifyResult);
       setContradictionData(contradictionResult);
+      setAdvocatePackData(advocatePackResult);
       setSelectedContradictionSource(null);
 
       setActiveClauseId(null);
@@ -196,12 +202,14 @@ export default function App() {
 
   const handleNavigateToCitation = (citation) => {
     if (!citation) return;
-    if (citation.clause_id) {
-      setActiveClauseId(citation.clause_id);
+    const clauseId = citation.clauseId || citation.clause_id;
+    if (clauseId) {
+      setActiveClauseId(clauseId);
     }
     setActiveFactField(null);
-    if (citation.page) {
-      const pageEl = document.getElementById(`pdf-page-${citation.page}`);
+    const pageNum = citation.page || citation.page_number;
+    if (pageNum) {
+      const pageEl = document.getElementById(`pdf-page-${pageNum}`);
       if (pageEl) {
         pageEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
@@ -301,6 +309,7 @@ export default function App() {
             contradictionData={contradictionData}
             selectedContradictionSource={selectedContradictionSource}
             onSelectContradictionSource={handleSelectContradictionSource}
+            advocatePackData={advocatePackData}
           />
         </div>
       </div>

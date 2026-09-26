@@ -224,3 +224,89 @@ button:focus-visible {
     min-height: 50vh !important;
   }
 }
+
+/* ==========================================================================
+   Print-Ready Archival Dossier Styles (Phase 8 Amendment 9)
+   Lightweight browser print / PDF output with clean A4 layout
+   ========================================================================== */
+.print-only {
+  display: none;
+}
+
+@media print {
+  /* Hide interactive application chrome, inputs, buttons, and canvas */
+  header,
+  .no-print,
+  .intake-desk-container,
+  .workspace-document-pane,
+  button,
+  nav,
+  input,
+  [role="tablist"] {
+    display: none !important;
+  }
+
+  body,
+  html,
+  #root {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+    font-size: 10.5pt !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .workspace-layout {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .workspace-evidence-pane {
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+    background-color: #ffffff !important;
+  }
+
+  .advocate-dossier-container {
+    padding: 12mm 15mm !important;
+    display: block !important;
+  }
+
+  .advocate-dossier-container section {
+    page-break-inside: avoid !important;
+    margin-bottom: 20pt !important;
+  }
+
+  .print-only {
+    display: inline !important;
+  }
+
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+
+  th,
+  td {
+    border: 1pt solid #d1d5db !important;
+    padding: 6pt 8pt !important;
+    color: #111827 !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tr {
+    page-break-inside: avoid !important;
+  }
+}

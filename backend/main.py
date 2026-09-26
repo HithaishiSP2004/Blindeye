@@ -9,11 +9,13 @@ from backend.engine.clause_segmenter import segment_clauses
 from backend.engine.pdf_parser import parse_pdf_geometry
 from backend.extraction.provenance_resolver import resolve_provenance
 from backend.extraction.structured_extractor import extract_candidate_facts
+from backend.models.advocate_pack import AdvocatePack
 from backend.models.contradiction import ContradictionResponse
 from backend.models.document import DocumentTree
 from backend.models.extraction import StructuredAgreementResult
 from backend.models.qa import QAResponse
 from backend.models.verification import DocumentVerificationResult
+from backend.advocate.pack_builder import build_advocate_pack
 from backend.contradiction.detector import ContradictionDetector
 from backend.retrieval.qa_service import QAService
 from backend.verification.verification_gate import VerificationGate
@@ -21,7 +23,7 @@ from backend.verification.verification_gate import VerificationGate
 app = FastAPI(
     title="Evidence-First Residential Agreement Intelligence",
     description="Verification-first document intelligence engine for Indian residential agreements.",
-    version="0.6.0",
+    version="0.8.0",
 )
 
 
@@ -42,7 +44,7 @@ async def health_check():
         "status": "ok",
         "app": "Evidence-First Legal AI",
         "environment": settings.APP_ENV,
-        "phase": "6 - Contradiction Engine",
+        "phase": "8 - Advocate Preparation Pack",
 
 
         "gemini_model": settings.GEMINI_MODEL,
@@ -278,6 +280,61 @@ async def detect_document_contradictions(
     # 6. Run contradiction detection
     detector = ContradictionDetector()
     return detector.detect_contradictions(doc_tree, structured_agreement)
+
+
+@app.post("/documents/advocate-pack", response_model=AdvocatePack, tags=["Advocate Pack"])
+async def generate_advocate_pack_endpoint(
+    file: UploadFile = File(...),
+):
+    """Generate an Evidentiary Agreement Review Dossier (Advocate Preparation Pack).
+
+    Strictly non-evaluative:
+    - Reuses exact existing pipeline components (PDF parsing, clause segmentation, verification, contradiction detection).
+    - Assembles deterministic evidentiary dossier with dual physical provenance.
+    - Zero generative hallucination; zero legal advice or validity adjudication.
+    """
+    # 1. Ingestion security & integrity validation
+    content, sha256_hash, filename = await validate_and_read_pdf(file)
+    doc_id = f"doc_{uuid.uuid4().hex[:12]}"
+
+    # 2. Geometric parsing via PyMuPDF
+    pages, parsing_status, warnings = parse_pdf_geometry(content)
+
+    # 3. Deterministic clause boundary segmentation
+    clauses = segment_clauses(pages)
+
+    # 4. Assemble hierarchical DocumentTree
+    doc_tree = DocumentTree(
+        document_id=doc_id,
+        filename=filename,
+        sha256_hash=sha256_hash,
+        file_size_bytes=len(content),
+        page_count=len(pages),
+        parsing_status=parsing_status,
+        pages=pages,
+        clauses=clauses,
+        warnings=warnings,
+    )
+
+    # 5. Extract candidate facts & provenance
+    candidates = await extract_candidate_facts(doc_tree)
+    structured_agreement = resolve_provenance(candidates, doc_tree)
+
+    # 6. Run verification gate
+    gate = VerificationGate()
+    verification_res = await gate.verify_agreement(structured_agreement, doc_tree)
+
+    # 7. Run contradiction detector
+    detector = ContradictionDetector()
+    contradiction_res = detector.detect_contradictions(doc_tree, structured_agreement)
+
+    # 8. Deterministically compile AdvocatePack
+    return build_advocate_pack(
+        document_tree=doc_tree,
+        verification_result=verification_res,
+        contradiction_response=contradiction_res,
+        document_name=filename,
+    )
 
 
 if __name__ == "__main__":

@@ -136,5 +136,26 @@ export async function detectContradictions(file) {
   }
 }
 
+export async function generateAdvocatePack(file) {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${API_BASE_URL}/documents/advocate-pack`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.detail || `Advocate pack generation failed with HTTP ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
 
 
