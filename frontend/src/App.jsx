@@ -14,6 +14,7 @@ export default function App() {
   const [contradictionData, setContradictionData] = useState(null);
   const [selectedContradictionSource, setSelectedContradictionSource] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loadingStage, setLoadingStage] = useState(null);
   const [error, setError] = useState(null);
   const [activeClauseId, setActiveClauseId] = useState(null);
   const [hoveredClauseId, setHoveredClauseId] = useState(null);
@@ -36,12 +37,19 @@ export default function App() {
 
   const handleParseFile = async (file) => {
     setLoading(true);
+    setLoadingStage('PARSING DOCUMENT');
     setError(null);
     setCurrentFile(file);
     try {
-      // Execute extraction (DocumentTree), Verification Gate (Phase 4), and Contradiction Engine (Phase 6) in parallel
-      const [extractResult, verifyResult, contradictionResult] = await Promise.all([
-        extractDocument(file),
+      // Step 1: Parse physical document geometry & map clauses
+      const extractResult = await extractDocument(file);
+      setLoadingStage('MAPPING CLAUSES');
+      setDocumentData(extractResult.document_tree);
+      setStructuredAgreement(extractResult.structured_agreement);
+
+      // Step 2: Index evidence & evaluate relationships
+      setLoadingStage('INDEXING EVIDENCE');
+      const [verifyResult, contradictionResult] = await Promise.all([
         verifyDocument(file),
         detectContradictions(file).catch((cErr) => {
           console.warn('Contradiction analysis note:', cErr);
@@ -49,8 +57,6 @@ export default function App() {
         }),
       ]);
 
-      setDocumentData(extractResult.document_tree);
-      setStructuredAgreement(extractResult.structured_agreement);
       setVerificationResult(verifyResult);
       setContradictionData(contradictionResult);
       setSelectedContradictionSource(null);
@@ -59,10 +65,12 @@ export default function App() {
       setHoveredClauseId(null);
       setActiveFactField(null);
       setHoveredFactField(null);
+      setLoadingStage(null);
     } catch (err) {
       setError(err.message || 'Failed to verify legal agreement.');
     } finally {
       setLoading(false);
+      setLoadingStage(null);
     }
   };
 
@@ -226,11 +234,13 @@ export default function App() {
         onLoadGolden={handleLoadGoldenAgreement}
         onLoadConflicting={handleLoadConflictingAgreement}
         loading={loading}
+        loadingStage={loadingStage}
         error={error}
       />
 
       {/* Main Editorial Workspace: 58% Document Surface / 42% Evidence Panel */}
       <div
+        className="workspace-layout"
         style={{
           display: 'flex',
           flex: 1,
@@ -240,6 +250,7 @@ export default function App() {
       >
         {/* Left Column: Physical Document Canvas (The Hero) */}
         <div
+          className="workspace-document-pane"
           style={{
             flex: '0 0 58%',
             maxWidth: '58%',
@@ -265,6 +276,7 @@ export default function App() {
 
         {/* Right Column: Structured Evidence & Provenance Hierarchy */}
         <div
+          className="workspace-evidence-pane"
           style={{
             flex: '0 0 42%',
             maxWidth: '42%',

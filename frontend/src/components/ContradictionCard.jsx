@@ -312,7 +312,7 @@ export default function ContradictionCard({ finding, onSelectSource, selectedSou
             }}
           >
             {isConflict
-              ? `Comparative Relationship: Incompatible values across matching scope (${finding.value_a} vs ${finding.value_b})`
+              ? `Source Relationship: Incompatible values across matching scope (${finding.value_a} vs ${finding.value_b})`
               : isInsufficient
               ? 'Operational Context Incomplete: Actor or scope not deterministically established'
               : 'Harmonious Provisions: Consistent values across scopes'}

@@ -168,3 +168,59 @@ button:focus-visible {
   filter: grayscale(12%);
   transition: opacity 0.2s ease;
 }
+
+/* Accessibility Focus Visible */
+a:focus-visible,
+input:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent-legal);
+  outline-offset: 2px;
+}
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Responsive Workspace Layouts */
+@media (max-width: 1024px) {
+  .workspace-layout {
+    flex-direction: column !important;
+  }
+  .workspace-document-pane {
+    flex: 1 1 auto !important;
+    max-width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--divider-line) !important;
+    min-height: 55vh !important;
+  }
+  .workspace-evidence-pane {
+    flex: 1 1 auto !important;
+    max-width: 100% !important;
+    min-height: 45vh !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .intake-desk-container {
+    padding: 16px !important;
+  }
+  .intake-buttons-group {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  .intake-buttons-group button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  .workspace-document-pane {
+    min-height: 50vh !important;
+  }
+}

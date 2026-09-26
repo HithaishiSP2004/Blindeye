@@ -364,7 +364,7 @@ export default function DocumentSurface({
                       }}
                     >
                       <span style={{ fontSize: '9px' }}>⇄</span>
-                      <span>Comparative Source: Clause {selectedContradictionSource.clause_number || ''}</span>
+                      <span>Related Source: Clause {selectedContradictionSource.clause_number || ''}</span>
                     </div>
                   </div>
                 )}

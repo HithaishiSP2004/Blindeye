@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflicting, loading, error }) {
+export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflicting, loading, loadingStage, error }) {
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleDrop = (e) => {
@@ -22,10 +22,11 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
 
   return (
     <div
+      className="intake-desk-container"
       style={{
         borderBottom: '1px solid var(--divider-line)',
         backgroundColor: 'var(--surface-bg)',
-        padding: '24px 28px',
+        padding: '22px 28px',
         transition: 'background-color 0.25s ease',
       }}
     >
@@ -35,7 +36,7 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '20px',
+          gap: '16px',
         }}
       >
         {/* Intake Title & Instructions */}
@@ -48,30 +49,32 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
               textTransform: 'uppercase',
               color: 'var(--accent-legal)',
               display: 'block',
-              marginBottom: '4px',
+              marginBottom: '3px',
             }}
           >
-            Document Intake Desk
+            Read The Agreement
           </span>
           <h2
             className="font-serif"
             style={{
-              fontSize: '18px',
-              fontWeight: 500,
+              fontSize: '17px',
+              fontWeight: 600,
               color: 'var(--ink-primary)',
-              lineHeight: 1.2,
+              lineHeight: 1.25,
+              margin: 0,
             }}
           >
-            Submit an Indian Residential Rent or Leave-and-Licence Agreement
+            Bring the agreement. We will show you exactly what it says.
           </h2>
           <p
             style={{
-              fontSize: '12px',
+              fontSize: '11.5px',
               color: 'var(--ink-secondary)',
               marginTop: '4px',
+              margin: '4px 0 0 0',
             }}
           >
-            Preserves physical line geometry, clause boundaries, and multi-page continuity.
+            PDF only · Physical line geometry, clause boundaries, and multi-page evidence preservation.
           </p>
         </div>
 
@@ -126,6 +129,44 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
               PDF · Max 15 MB
             </span>
           </label>
+
+          {/* Stepped Observable Loading Stage (Amendment 1) */}
+          {loadingStage && (
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 14px',
+                borderRadius: '3px',
+                backgroundColor: 'var(--sheet-bg)',
+                border: '1px solid var(--accent-border)',
+                boxShadow: 'var(--panel-shadow)',
+              }}
+            >
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--accent-legal)',
+                }}
+              />
+              <span
+                className="font-mono"
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  letterSpacing: '0.05em',
+                  color: 'var(--accent-legal)',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {loadingStage}
+              </span>
+            </div>
+          )}
 
           {/* Quick-Load Golden Fixture Button */}
           <button
