@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function IntakeArea({ onParseFile, onLoadGolden, loading, error }) {
+export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflicting, loading, error }) {
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleDrop = (e) => {
@@ -144,11 +144,38 @@ export default function IntakeArea({ onParseFile, onLoadGolden, loading, error }
               color: 'var(--ink-primary)',
               boxShadow: 'var(--panel-shadow)',
               opacity: loading ? 0.6 : 1,
+              cursor: 'pointer',
             }}
           >
             <span>Load Golden Agreement (Bangalore 11-mo)</span>
             <span style={{ color: 'var(--accent-legal)', fontSize: '11px' }}>→</span>
           </button>
+
+          {/* Quick-Load Divergent Agreement Button */}
+          {onLoadConflicting && (
+            <button
+              onClick={onLoadConflicting}
+              disabled={loading}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 18px',
+                backgroundColor: 'var(--sheet-bg)',
+                border: '1px solid var(--divider-line)',
+                borderRadius: '2px',
+                fontSize: '12px',
+                fontWeight: 500,
+                color: 'var(--ink-primary)',
+                boxShadow: 'var(--panel-shadow)',
+                opacity: loading ? 0.6 : 1,
+                cursor: 'pointer',
+              }}
+            >
+              <span>Load Divergent Covenants (Conflicting Terms)</span>
+              <span style={{ color: 'var(--accent-legal)', fontSize: '11px' }}>≠</span>
+            </button>
+          )}
         </div>
       </div>
 

@@ -208,12 +208,13 @@ export default function EvidencePanel({
               {contradictionData && (
                 <span
                   style={{
-                    backgroundColor: contradictionData.total_conflicts > 0 ? '#DC2626' : 'rgba(0,0,0,0.1)',
-                    color: contradictionData.total_conflicts > 0 ? '#FFFFFF' : 'inherit',
+                    backgroundColor: activeTab === 'contradictions' ? 'rgba(255, 255, 255, 0.25)' : 'var(--accent-soft)',
+                    color: activeTab === 'contradictions' ? '#FFFFFF' : 'var(--accent-legal)',
                     borderRadius: '10px',
                     padding: '1px 6px',
                     fontSize: '10px',
-                    fontWeight: 700,
+                    fontWeight: 600,
+                    border: '1px solid var(--accent-border)',
                   }}
                 >
                   {contradictionData.total_conflicts}

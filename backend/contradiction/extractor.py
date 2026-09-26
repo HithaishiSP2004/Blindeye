@@ -95,9 +95,9 @@ class CandidateExtractor:
             # 1. Notice Period Statements
             # e.g., "Tenant shall provide 30 days notice", "serving thirty (30) days written notice"
             notice_matches = re.finditer(
-                r"\b(?:give|provide|serve|with)?\s*(?:thirty|sixty|ninety|fifteen|one|two|three)?\s*\(?([0-9]+)\)?\s*(days?|months?)\s*(?:prior\s*)?(?:written\s*)?notice\b|"
+                r"\b(?:give|giving|provides?|providing|serve|serving|with)?\s*(?:thirty|sixty|ninety|fifteen|one|two|three)?\s*\(?([0-9]+)\)?\s*(days?|months?)\s*(?:prior|advance|written|\s)*notice\b|"
                 r"\bnotice\s*(?:period\s*)?(?:of\s*|shall\s*be\s*|is\s*)?(?:thirty|sixty|ninety|fifteen|one|two|three)?\s*\(?([0-9]+)\)?\s*(days?|months?)\b|"
-                r"\b(?:give|provide|serve|with)?\s*(thirty|sixty|ninety|fifteen|one|two|three)\s*(days?|months?)\s*(?:prior\s*)?(?:written\s*)?notice\b",
+                r"\b(?:give|giving|provides?|providing|serve|serving|with)?\s*(thirty|sixty|ninety|fifteen|one|two|three)\s*(days?|months?)\s*(?:prior|advance|written|\s)*notice\b",
                 text,
                 re.IGNORECASE,
             )

@@ -102,6 +102,23 @@ export default function App() {
     }
   };
 
+  const handleLoadConflictingAgreement = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/golden_agreement_conflicting.pdf');
+      if (!res.ok) {
+        throw new Error('Conflicting fixture PDF not found in static assets.');
+      }
+      const blob = await res.blob();
+      const file = new File([blob], 'golden_agreement_conflicting.pdf', { type: 'application/pdf' });
+      await handleParseFile(file);
+    } catch (err) {
+      setError(err.message || 'Failed to load conflicting agreement.');
+      setLoading(false);
+    }
+  };
+
   const handleSelectFact = (fieldKey, item) => {
     if (activeFactField === fieldKey) {
       setActiveFactField(null);
@@ -207,6 +224,7 @@ export default function App() {
       <IntakeArea
         onParseFile={handleParseFile}
         onLoadGolden={handleLoadGoldenAgreement}
+        onLoadConflicting={handleLoadConflictingAgreement}
         loading={loading}
         error={error}
       />

@@ -325,40 +325,47 @@ export default function DocumentSurface({
                   />
                 ))}
 
-                {/* Contradiction Evidence Source Box (Bilateral Dual Physical Provenance) */}
+                {/* Comparative Evidence Source Box (Bilateral Dual Physical Provenance) */}
                 {selectedContradictionSource?.bbox && selectedContradictionSource.bbox.page === page.page_number && (
                   <div
                     style={{
                       position: 'absolute',
                       left: `${(selectedContradictionSource.bbox.x0 / pageWidth) * 100}%`,
                       top: `${(selectedContradictionSource.bbox.y0 / pageHeight) * 100}%`,
-                      width: `${((selectedContradictionSource.bbox.x1 - selectedContradictionSource.bbox.x0) / pageWidth) * 100}%`,
-                      height: `${((selectedContradictionSource.bbox.y1 - selectedContradictionSource.bbox.y0) / pageHeight) * 100}%`,
-                      border: '2px solid #DC2626',
-                      backgroundColor: 'rgba(220, 38, 38, 0.16)',
+                      width: `${Math.max(1, ((selectedContradictionSource.bbox.x1 - selectedContradictionSource.bbox.x0) / pageWidth) * 100)}%`,
+                      height: `${Math.max(1.2, ((selectedContradictionSource.bbox.y1 - selectedContradictionSource.bbox.y0) / pageHeight) * 100)}%`,
+                      border: '1.5px solid var(--accent-legal)',
+                      backgroundColor: 'var(--accent-soft)',
                       borderRadius: '2px',
                       pointerEvents: 'none',
-                      boxShadow: '0 0 0 2px rgba(220, 38, 38, 0.25)',
-                      zIndex: 20,
+                      boxShadow: '0 0 10px var(--accent-glow)',
+                      zIndex: 25,
+                      transition: 'all 140ms ease',
                     }}
                   >
-                    <span
+                    <div
                       style={{
                         position: 'absolute',
-                        top: '-18px',
+                        bottom: 'calc(100% + 3px)',
                         left: 0,
-                        backgroundColor: '#DC2626',
+                        backgroundColor: 'var(--accent-legal)',
                         color: '#FFFFFF',
                         fontSize: '9px',
-                        fontWeight: 700,
-                        padding: '1px 6px',
-                        borderRadius: '2px',
+                        fontWeight: 600,
                         letterSpacing: '0.04em',
+                        padding: '2px 7px',
+                        borderRadius: '2px',
                         whiteSpace: 'nowrap',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.25)',
+                        zIndex: 30,
                       }}
                     >
-                      CONTRADICTION SOURCE ({selectedContradictionSource.actor || 'ACTOR'})
-                    </span>
+                      <span style={{ fontSize: '9px' }}>⇄</span>
+                      <span>Comparative Source: Clause {selectedContradictionSource.clause_number || ''}</span>
+                    </div>
                   </div>
                 )}
               </div>
