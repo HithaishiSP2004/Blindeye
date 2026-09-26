@@ -12,6 +12,7 @@ async def test_health_endpoint():
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "ok"
+        assert data["app"] in ["Blind Eye Legal AI", "Evidence-First Legal AI"]
         assert any(p in data["phase"] for p in ["Showcase", "Advocate", "Contradiction", "Q&A", "Evidence-First", "Verification", "Extraction", "Document Engine", "Foundation"])
         assert "gemini_fallback_models" in data
         assert "gemini-3.7-flash" in data["gemini_fallback_models"]
@@ -31,3 +32,4 @@ async def test_root_endpoint():
         data = response.json()
         assert data["status"] == "online"
         assert "version" in data
+        assert "Blind Eye" in data["message"]

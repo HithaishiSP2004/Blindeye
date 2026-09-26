@@ -10,8 +10,8 @@ class Settings(BaseSettings):
     APP_PORT: int = Field(default=8000, description="Server listening port")
     APP_HOST: str = Field(default="127.0.0.1", description="Server listening host")
     CORS_ORIGINS: str = Field(
-        default="http://localhost:5173,http://127.0.0.1:5173",
-        description="Comma-separated allowed origins for CORS",
+        default="*",
+        description="Comma-separated allowed origins for CORS (default: * for universal deployment compatibility)",
     )
 
     GEMINI_API_KEY: str = Field(

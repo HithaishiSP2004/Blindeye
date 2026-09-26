@@ -174,7 +174,7 @@ export default function AdvocatePackPanel({
               marginBottom: '4px',
             }}
           >
-            Evidentiary Agreement Review Dossier
+            BLIND EYE · Evidentiary Agreement Review Dossier
           </div>
           <h2
             className="font-serif"

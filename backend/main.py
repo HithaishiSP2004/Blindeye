@@ -21,17 +21,20 @@ from backend.retrieval.qa_service import QAService
 from backend.verification.verification_gate import VerificationGate
 
 app = FastAPI(
-    title="Evidence-First Residential Agreement Intelligence",
+    title="Blind Eye · Residential Agreement Intelligence",
     description="Verification-first document intelligence engine for Indian residential agreements.",
-    version="0.8.0",
+    version="1.0.0",
 )
 
 
-# Configure CORS
+# Configure CORS (supports wildcard and explicit origin list)
+_origins = settings.cors_origins_list
+_has_wildcard = "*" in _origins or not _origins
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins_list,
-    allow_credentials=True,
+    allow_origins=["*"] if _has_wildcard else _origins,
+    allow_credentials=False if _has_wildcard else True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -42,7 +45,7 @@ async def health_check():
     """Health check endpoint to verify backend operational readiness."""
     return {
         "status": "ok",
-        "app": "Evidence-First Legal AI",
+        "app": "Blind Eye Legal AI",
         "environment": settings.APP_ENV,
         "phase": "10 - Final Showcase & Product Readiness",
         "gemini_model": settings.GEMINI_MODEL,
@@ -58,8 +61,8 @@ async def health_check():
 async def root():
     """Root metadata endpoint."""
     return {
-        "message": "Evidence-First Residential Agreement Intelligence API",
-        "version": "0.4.0",
+        "message": "Blind Eye · Residential Agreement Intelligence API",
+        "version": "1.0.0",
         "status": "online",
         "docs_url": "/docs",
     }
@@ -336,8 +339,29 @@ async def generate_advocate_pack_endpoint(
     )
 
 
-if __name__ == "__main__":
+import os
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
+# Static assets & SPA fallback for production deployment
+_frontend_dist = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend", "dist"))
+if os.path.isdir(_frontend_dist):
+    _assets_dir = os.path.join(_frontend_dist, "assets")
+    if os.path.isdir(_assets_dir):
+        app.mount("/assets", StaticFiles(directory=_assets_dir), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_spa(full_path: str):
+        candidate = os.path.join(_frontend_dist, full_path)
+        if full_path and os.path.isfile(candidate):
+            return FileResponse(candidate)
+        index_file = os.path.join(_frontend_dist, "index.html")
+        if os.path.isfile(index_file):
+            return FileResponse(index_file)
+        return {"status": "online", "app": "Blind Eye Legal AI"}
+
+
+if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(

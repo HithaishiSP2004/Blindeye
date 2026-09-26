@@ -25,7 +25,7 @@ export default function Header({ theme, onToggleTheme, documentInfo }) {
               color: 'var(--ink-primary)',
             }}
           >
-            EVIDENCE FIRST
+            BLIND EYE
           </span>
         </div>
         <span

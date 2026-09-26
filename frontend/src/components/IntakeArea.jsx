@@ -52,7 +52,7 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
               marginBottom: '3px',
             }}
           >
-            EVIDENCE FIRST · RESIDENTIAL AGREEMENT INTELLIGENCE
+            BLIND EYE · RESIDENTIAL AGREEMENT INTELLIGENCE
           </span>
           <h2
             className="font-serif"
