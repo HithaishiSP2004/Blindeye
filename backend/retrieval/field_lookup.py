@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Tuple
 from pydantic import BaseModel
 from backend.models.document import DocumentTree
 from backend.models.extraction import ExtractionStatus, ProvenancedValue, StructuredAgreement
-from backend.models.qa import AnswerStatus, EvidenceCitation, QuestionType
+from backend.models.qa import AnswerStatus, EvidenceCitation
 
 # Canonical question patterns mapping to StructuredAgreement field names
 CANONICAL_FIELD_PATTERNS: List[Tuple[str, str, re.Pattern]] = [

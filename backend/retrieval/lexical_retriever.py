@@ -1,6 +1,6 @@
 import math
 import re
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Set
 from pydantic import BaseModel
 from backend.models.document import Clause, DocumentTree
 

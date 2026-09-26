@@ -1,13 +1,10 @@
 import logging
 import re
 from typing import Dict, List, Optional
-from backend.core.config import settings
 from backend.models.document import DocumentTree
 from backend.models.extraction import StructuredAgreement
 from backend.models.qa import (
     AnswerStatus,
-    EvidenceCitation,
-    QARequest,
     QAResponse,
     QuestionType,
     RetrievalMetadata,
@@ -16,7 +13,6 @@ from backend.models.qa import (
 from backend.retrieval.clause_retriever import ClauseRetriever
 from backend.retrieval.constrained_generator import (
     AnswerGenerator,
-    DeterministicGenerator,
     GeminiGenerator,
 )
 from backend.retrieval.evidence_selector import EvidenceSelector

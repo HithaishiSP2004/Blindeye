@@ -99,56 +99,31 @@ export default function App() {
   };
 
 
-  const handleLoadGoldenAgreement = async () => {
+  const handleLoadFixture = async (path, filename, label) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/golden_agreement.pdf');
+      const res = await fetch(path);
       if (!res.ok) {
-        throw new Error('Golden fixture PDF not found in static assets.');
+        throw new Error(`${label} not found in static assets.`);
       }
       const blob = await res.blob();
-      const file = new File([blob], 'golden_agreement.pdf', { type: 'application/pdf' });
+      const file = new File([blob], filename, { type: 'application/pdf' });
       await handleParseFile(file);
     } catch (err) {
-      setError(err.message || 'Failed to load golden agreement.');
+      setError(err.message || `Failed to load ${label.toLowerCase()}.`);
       setLoading(false);
     }
   };
 
-  const handleLoadConflictingAgreement = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch('/golden_agreement_conflicting.pdf');
-      if (!res.ok) {
-        throw new Error('Conflicting fixture PDF not found in static assets.');
-      }
-      const blob = await res.blob();
-      const file = new File([blob], 'golden_agreement_conflicting.pdf', { type: 'application/pdf' });
-      await handleParseFile(file);
-    } catch (err) {
-      setError(err.message || 'Failed to load conflicting agreement.');
-      setLoading(false);
-    }
-  };
+  const handleLoadGoldenAgreement = () =>
+    handleLoadFixture('/golden_agreement.pdf', 'golden_agreement.pdf', 'Golden fixture PDF');
 
-  const handleLoadAdversarialAgreement = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch('/adversarial_injection.pdf');
-      if (!res.ok) {
-        throw new Error('Adversarial fixture PDF not found in static assets.');
-      }
-      const blob = await res.blob();
-      const file = new File([blob], 'adversarial_injection.pdf', { type: 'application/pdf' });
-      await handleParseFile(file);
-    } catch (err) {
-      setError(err.message || 'Failed to load adversarial agreement.');
-      setLoading(false);
-    }
-  };
+  const handleLoadConflictingAgreement = () =>
+    handleLoadFixture('/golden_agreement_conflicting.pdf', 'golden_agreement_conflicting.pdf', 'Conflicting fixture PDF');
+
+  const handleLoadAdversarialAgreement = () =>
+    handleLoadFixture('/adversarial_injection.pdf', 'adversarial_injection.pdf', 'Adversarial fixture PDF');
 
   const handleSelectFact = (fieldKey, item) => {
     if (activeFactField === fieldKey) {

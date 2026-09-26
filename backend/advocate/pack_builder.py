@@ -19,7 +19,6 @@ from backend.models.verification import (
     VerificationStatus,
 )
 from backend.models.contradiction import (
-    ContradictionFinding,
     ContradictionResponse,
     ContradictionStatus,
 )

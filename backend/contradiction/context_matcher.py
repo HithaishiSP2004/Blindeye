@@ -1,11 +1,9 @@
 import uuid
-from typing import Dict, List, Optional, Tuple
 from backend.contradiction.extractor import CandidateStatement
 from backend.models.contradiction import (
     ContradictionActor,
     ContradictionFinding,
     ContradictionStatus,
-    ContradictionSubject,
 )
 
 

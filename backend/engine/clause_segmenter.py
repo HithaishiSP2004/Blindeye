@@ -1,6 +1,6 @@
 import re
 from typing import List, Optional, Tuple
-from backend.models.document import Clause, PageData, TextBlock
+from backend.models.document import Clause, PageData
 
 
 # Regex patterns for clause boundary detection

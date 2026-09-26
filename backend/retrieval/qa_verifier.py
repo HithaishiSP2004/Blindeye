@@ -11,7 +11,6 @@ from backend.models.verification import (
 )
 from backend.verification.deterministic_checker import DeterministicChecker
 from backend.verification.semantic_evaluator import (
-    DeterministicMockSemanticEvaluator,
     GeminiSemanticEvaluator,
     SemanticEvaluator,
 )

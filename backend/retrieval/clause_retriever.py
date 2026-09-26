@@ -1,5 +1,5 @@
 import re
-from typing import Dict, List, Optional
+from typing import List, Optional
 from pydantic import BaseModel
 from backend.models.document import BoundingBox, Clause, DocumentTree
 from backend.models.qa import AnswerStatus, EvidenceCitation

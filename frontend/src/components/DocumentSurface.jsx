@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import EvidenceMarker from './EvidenceMarker';
 
 const FIELD_LABELS = {
@@ -71,6 +71,70 @@ export default function DocumentSurface({
     }
   }, [activeFactField, documentData, verificationResult, structuredAgreement]);
 
+  // Map block_id -> Clause for instantaneous lookup
+  const blockToClauseMap = useMemo(() => {
+    if (!documentData?.clauses) return {};
+    const map = {};
+    documentData.clauses.forEach((clause) => {
+      clause.source_block_ids?.forEach((bId) => {
+        map[bId] = clause;
+      });
+    });
+    return map;
+  }, [documentData]);
+
+  // Extract all verified fact bounding boxes per page from verificationResult (preferred) or structuredAgreement
+  const pageFactMarkers = useMemo(() => {
+    const markers = {};
+    if (verificationResult?.claims && verificationResult.claims.length > 0) {
+      verificationResult.claims.forEach((claim) => {
+        const addedKeysForPage = new Set();
+
+        // Collect primary source bbox
+        const primaryBbox = claim.source?.bbox;
+        if (primaryBbox && primaryBbox.page) {
+          const pNum = primaryBbox.page;
+          if (!markers[pNum]) markers[pNum] = [];
+          markers[pNum].push({
+            key: claim.field_name,
+            fact: claim,
+            bbox: primaryBbox,
+          });
+          addedKeysForPage.add(`${claim.field_name}_p${pNum}`);
+        }
+
+        // Collect any additional bounding boxes (e.g. multi-page maintenance)
+        if (claim.bounding_boxes && claim.bounding_boxes.length > 0) {
+          claim.bounding_boxes.forEach((bb) => {
+            if (bb && bb.page && !addedKeysForPage.has(`${claim.field_name}_p${bb.page}`)) {
+              const pNum = bb.page;
+              if (!markers[pNum]) markers[pNum] = [];
+              markers[pNum].push({
+                key: claim.field_name,
+                fact: claim,
+                bbox: bb,
+              });
+              addedKeysForPage.add(`${claim.field_name}_p${pNum}`);
+            }
+          });
+        }
+      });
+    } else if (structuredAgreement) {
+      Object.entries(structuredAgreement).forEach(([key, fact]) => {
+        if (fact && fact.bbox && fact.bbox.page) {
+          const pNum = fact.bbox.page;
+          if (!markers[pNum]) markers[pNum] = [];
+          markers[pNum].push({
+            key,
+            fact,
+            bbox: fact.bbox,
+          });
+        }
+      });
+    }
+    return markers;
+  }, [verificationResult, structuredAgreement]);
+
   if (!documentData) {
     return (
       <div
@@ -124,65 +188,7 @@ export default function DocumentSurface({
     );
   }
 
-  // Map block_id -> Clause for instantaneous lookup
-  const blockToClauseMap = {};
-  documentData.clauses.forEach((clause) => {
-    clause.source_block_ids.forEach((bId) => {
-      blockToClauseMap[bId] = clause;
-    });
-  });
-
   const hasSelection = Boolean(activeClauseId || hoveredClauseId || activeFactField || hoveredFactField);
-
-  // Extract all verified fact bounding boxes per page from verificationResult (preferred) or structuredAgreement
-  const pageFactMarkers = {};
-
-  if (verificationResult?.claims && verificationResult.claims.length > 0) {
-    verificationResult.claims.forEach((claim) => {
-      const addedKeysForPage = new Set();
-
-      // Collect primary source bbox
-      const primaryBbox = claim.source?.bbox;
-      if (primaryBbox && primaryBbox.page) {
-        const pNum = primaryBbox.page;
-        if (!pageFactMarkers[pNum]) pageFactMarkers[pNum] = [];
-        pageFactMarkers[pNum].push({
-          key: claim.field_name,
-          fact: claim,
-          bbox: primaryBbox,
-        });
-        addedKeysForPage.add(`${claim.field_name}_p${pNum}`);
-      }
-
-      // Collect any additional bounding boxes (e.g. multi-page maintenance)
-      if (claim.bounding_boxes && claim.bounding_boxes.length > 0) {
-        claim.bounding_boxes.forEach((bb) => {
-          if (bb && bb.page && !addedKeysForPage.has(`${claim.field_name}_p${bb.page}`)) {
-            const pNum = bb.page;
-            if (!pageFactMarkers[pNum]) pageFactMarkers[pNum] = [];
-            pageFactMarkers[pNum].push({
-              key: claim.field_name,
-              fact: claim,
-              bbox: bb,
-            });
-            addedKeysForPage.add(`${claim.field_name}_p${pNum}`);
-          }
-        });
-      }
-    });
-  } else if (structuredAgreement) {
-    Object.entries(structuredAgreement).forEach(([key, fact]) => {
-      if (fact && fact.bbox && fact.bbox.page) {
-        const pNum = fact.bbox.page;
-        if (!pageFactMarkers[pNum]) pageFactMarkers[pNum] = [];
-        pageFactMarkers[pNum].push({
-          key,
-          fact,
-          bbox: fact.bbox,
-        });
-      }
-    });
-  }
 
   return (
     <div

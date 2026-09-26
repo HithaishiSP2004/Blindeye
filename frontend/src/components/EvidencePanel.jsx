@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import FactRow from './FactRow';
 import QuestionDesk from './QuestionDesk';
 import ContradictionPanel from './ContradictionPanel';
@@ -56,6 +56,23 @@ export default function EvidencePanel({
     }
   }, [activeFactField, activeTab]);
 
+  const substantiveClauses = useMemo(() => {
+    return documentData?.clauses ? documentData.clauses.filter((c) => !c.is_header_footer) : [];
+  }, [documentData]);
+
+  // Map atomic claims by field_name for instant lookup
+  const claimsByField = useMemo(() => {
+    const map = {};
+    if (verificationResult?.claims) {
+      verificationResult.claims.forEach((claim) => {
+        if (claim.field_name) {
+          map[claim.field_name] = claim;
+        }
+      });
+    }
+    return map;
+  }, [verificationResult]);
+
   if (!documentData) {
     return (
       <div
@@ -71,18 +88,6 @@ export default function EvidencePanel({
         </p>
       </div>
     );
-  }
-
-  const substantiveClauses = documentData.clauses.filter((c) => !c.is_header_footer);
-
-  // Map atomic claims by field_name for instant lookup
-  const claimsByField = {};
-  if (verificationResult?.claims) {
-    verificationResult.claims.forEach((claim) => {
-      if (claim.field_name) {
-        claimsByField[claim.field_name] = claim;
-      }
-    });
   }
 
   // Summary counts: prioritize Phase 4 VerificationSummary, fall back to structuredAgreement.summary

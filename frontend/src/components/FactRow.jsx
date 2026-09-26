@@ -19,7 +19,7 @@ const FIELD_LABELS = {
   renewal_terms: 'Renewal Terms',
 };
 
-export default function FactRow({
+function FactRow({
   fieldKey,
   fact,
   claim,
@@ -449,3 +449,5 @@ export default function FactRow({
     </div>
   );
 }
+
+export default React.memo(FactRow);

@@ -4,6 +4,20 @@
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8000' : '');
 
+async function postFormData(endpoint, formData, fallbackError) {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errData = await response.json().catch(() => ({}));
+    throw new Error(errData.detail || `${fallbackError} with HTTP ${response.status}`);
+  }
+
+  return await response.json();
+}
+
 export async function checkBackendHealth() {
   try {
     const response = await fetch(`${API_BASE_URL}/health`, {
@@ -26,135 +40,38 @@ export async function checkBackendHealth() {
   }
 }
 
-export async function parseDocument(file) {
-  try {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await fetch(`${API_BASE_URL}/documents/parse`, {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.detail || `Upload failed with HTTP ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    throw error;
-  }
-}
-
 export async function extractDocument(file) {
-  try {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await fetch(`${API_BASE_URL}/documents/extract`, {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.detail || `Extraction failed with HTTP ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    throw error;
-  }
+  const formData = new FormData();
+  formData.append('file', file);
+  return postFormData('/documents/extract', formData, 'Extraction failed');
 }
 
 export async function verifyDocument(file) {
-  try {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await fetch(`${API_BASE_URL}/documents/verify`, {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.detail || `Verification failed with HTTP ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    throw error;
-  }
+  const formData = new FormData();
+  formData.append('file', file);
+  return postFormData('/documents/verify', formData, 'Verification failed');
 }
 
 export async function askDocument(file, question, conversationHistory = []) {
-
-  try {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('question', question);
-    if (conversationHistory && conversationHistory.length > 0) {
-      formData.append('conversation_history', JSON.stringify(conversationHistory));
-    }
-
-    const response = await fetch(`${API_BASE_URL}/documents/ask`, {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.detail || `Q&A failed with HTTP ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    throw error;
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('question', question);
+  if (conversationHistory && conversationHistory.length > 0) {
+    formData.append('conversation_history', JSON.stringify(conversationHistory));
   }
+  return postFormData('/documents/ask', formData, 'Q&A failed');
 }
 
 export async function detectContradictions(file) {
-  try {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await fetch(`${API_BASE_URL}/documents/contradictions`, {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.detail || `Contradiction detection failed with HTTP ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    throw error;
-  }
+  const formData = new FormData();
+  formData.append('file', file);
+  return postFormData('/documents/contradictions', formData, 'Contradiction detection failed');
 }
 
 export async function generateAdvocatePack(file) {
-  try {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await fetch(`${API_BASE_URL}/documents/advocate-pack`, {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.detail || `Advocate pack generation failed with HTTP ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    throw error;
-  }
+  const formData = new FormData();
+  formData.append('file', file);
+  return postFormData('/documents/advocate-pack', formData, 'Advocate pack generation failed');
 }
 
 

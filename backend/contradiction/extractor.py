@@ -1,12 +1,12 @@
 import re
-from typing import List, Optional, Tuple
-from pydantic import BaseModel, Field
+from typing import List, Optional
+from pydantic import BaseModel
 from backend.models.contradiction import (
     ContradictionActor,
     ContradictionEvidence,
     ContradictionSubject,
 )
-from backend.models.document import Clause, DocumentTree
+from backend.models.document import DocumentTree
 from backend.models.extraction import StructuredAgreement
 
 

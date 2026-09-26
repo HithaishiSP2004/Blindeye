@@ -1,7 +1,5 @@
-import json
 import logging
 import re
-from typing import Optional
 from backend.core.config import settings
 from backend.models.document import DocumentTree
 from backend.models.extraction import CandidateExtractionResult, CandidateFact

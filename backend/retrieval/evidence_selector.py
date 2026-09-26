@@ -1,5 +1,5 @@
 import re
-from typing import List, Optional, Tuple
+from typing import List
 from backend.models.document import BoundingBox, Clause, DocumentTree, TextBlock
 from backend.models.qa import EvidenceCitation
 

@@ -1,8 +1,11 @@
 import json
+import os
 import uuid
 from typing import Optional
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from backend.core.config import settings
 from backend.core.security import validate_and_read_pdf
 from backend.engine.clause_segmenter import segment_clauses
@@ -40,6 +43,32 @@ app.add_middleware(
 )
 
 
+async def _parse_upload_to_tree(file: UploadFile) -> DocumentTree:
+    """Securely ingest, validate, parse geometry, and segment clauses into DocumentTree."""
+    # 1. Ingestion security & integrity validation
+    content, sha256_hash, filename = await validate_and_read_pdf(file)
+    doc_id = f"doc_{uuid.uuid4().hex[:12]}"
+
+    # 2. Geometric parsing via PyMuPDF
+    pages, parsing_status, warnings = parse_pdf_geometry(content)
+
+    # 3. Deterministic clause boundary segmentation
+    clauses = segment_clauses(pages)
+
+    # 4. Assemble hierarchical DocumentTree
+    return DocumentTree(
+        document_id=doc_id,
+        filename=filename,
+        sha256_hash=sha256_hash,
+        file_size_bytes=len(content),
+        page_count=len(pages),
+        parsing_status=parsing_status,
+        pages=pages,
+        clauses=clauses,
+        warnings=warnings,
+    )
+
+
 @app.get("/health", tags=["Health"])
 async def health_check():
     """Health check endpoint to verify backend operational readiness."""
@@ -71,30 +100,7 @@ async def root():
 @app.post("/documents/parse", response_model=DocumentTree, tags=["Documents"])
 async def parse_document(file: UploadFile = File(...)):
     """Securely ingest and parse an uploaded PDF into a coordinate-preserving DocumentTree."""
-    # 1. Ingestion security & integrity validation
-    content, sha256_hash, filename = await validate_and_read_pdf(file)
-    doc_id = f"doc_{uuid.uuid4().hex[:12]}"
-
-    # 2. Geometric parsing via PyMuPDF
-    pages, parsing_status, warnings = parse_pdf_geometry(content)
-
-    # 3. Deterministic clause boundary segmentation
-    clauses = segment_clauses(pages)
-
-    # 4. Assemble hierarchical DocumentTree
-    doc_tree = DocumentTree(
-        document_id=doc_id,
-        filename=filename,
-        sha256_hash=sha256_hash,
-        file_size_bytes=len(content),
-        page_count=len(pages),
-        parsing_status=parsing_status,
-        pages=pages,
-        clauses=clauses,
-        warnings=warnings,
-    )
-
-    return doc_tree
+    return await _parse_upload_to_tree(file)
 
 
 @app.post("/documents/extract", response_model=StructuredAgreementResult, tags=["Extraction"])
@@ -102,33 +108,12 @@ async def extract_document(file: UploadFile = File(...)):
     """Securely ingest PDF, parse DocumentTree, extract candidate facts via Gemini,
     and resolve deterministic physical provenance.
     """
-    # 1. Ingestion security & integrity validation
-    content, sha256_hash, filename = await validate_and_read_pdf(file)
-    doc_id = f"doc_{uuid.uuid4().hex[:12]}"
+    doc_tree = await _parse_upload_to_tree(file)
 
-    # 2. Geometric parsing via PyMuPDF
-    pages, parsing_status, warnings = parse_pdf_geometry(content)
-
-    # 3. Deterministic clause boundary segmentation
-    clauses = segment_clauses(pages)
-
-    # 4. Assemble hierarchical DocumentTree
-    doc_tree = DocumentTree(
-        document_id=doc_id,
-        filename=filename,
-        sha256_hash=sha256_hash,
-        file_size_bytes=len(content),
-        page_count=len(pages),
-        parsing_status=parsing_status,
-        pages=pages,
-        clauses=clauses,
-        warnings=warnings,
-    )
-
-    # 5. Extract candidate facts via Gemini official SDK (or deterministic fallback)
+    # Extract candidate facts via Gemini official SDK (or deterministic fallback)
     candidates = await extract_candidate_facts(doc_tree)
 
-    # 6. Resolve deterministic provenance against DocumentTree
+    # Resolve deterministic provenance against DocumentTree
     structured_agreement = resolve_provenance(candidates, doc_tree)
 
     return StructuredAgreementResult(
@@ -142,36 +127,15 @@ async def verify_document(file: UploadFile = File(...)):
     """Securely ingest PDF, parse DocumentTree, extract candidate facts,
     resolve provenance, and execute the Verification Gate.
     """
-    # 1. Ingestion security & integrity validation
-    content, sha256_hash, filename = await validate_and_read_pdf(file)
-    doc_id = f"doc_{uuid.uuid4().hex[:12]}"
+    doc_tree = await _parse_upload_to_tree(file)
 
-    # 2. Geometric parsing via PyMuPDF
-    pages, parsing_status, warnings = parse_pdf_geometry(content)
-
-    # 3. Deterministic clause boundary segmentation
-    clauses = segment_clauses(pages)
-
-    # 4. Assemble hierarchical DocumentTree
-    doc_tree = DocumentTree(
-        document_id=doc_id,
-        filename=filename,
-        sha256_hash=sha256_hash,
-        file_size_bytes=len(content),
-        page_count=len(pages),
-        parsing_status=parsing_status,
-        pages=pages,
-        clauses=clauses,
-        warnings=warnings,
-    )
-
-    # 5. Extract candidate facts via Gemini official SDK (or deterministic fallback)
+    # Extract candidate facts via Gemini official SDK (or deterministic fallback)
     candidates = await extract_candidate_facts(doc_tree)
 
-    # 6. Resolve deterministic provenance against DocumentTree
+    # Resolve deterministic provenance against DocumentTree
     structured_agreement = resolve_provenance(candidates, doc_tree)
 
-    # 7. Verification Gate (Correction 1, 2, 7, 13)
+    # Verification Gate (Correction 1, 2, 7, 13)
     gate = VerificationGate()
     verification_result = await gate.verify_agreement(structured_agreement, doc_tree)
 
@@ -192,34 +156,13 @@ async def ask_document(
     - Deterministic fast path for canonical queries without requiring Gemini.
     - Conversation history is context-only, never evidence (Correction 12).
     """
-    # 1. Ingestion security & integrity validation
-    content, sha256_hash, filename = await validate_and_read_pdf(file)
-    doc_id = f"doc_{uuid.uuid4().hex[:12]}"
+    doc_tree = await _parse_upload_to_tree(file)
 
-    # 2. Geometric parsing via PyMuPDF
-    pages, parsing_status, warnings = parse_pdf_geometry(content)
-
-    # 3. Deterministic clause boundary segmentation
-    clauses = segment_clauses(pages)
-
-    # 4. Assemble hierarchical DocumentTree
-    doc_tree = DocumentTree(
-        document_id=doc_id,
-        filename=filename,
-        sha256_hash=sha256_hash,
-        file_size_bytes=len(content),
-        page_count=len(pages),
-        parsing_status=parsing_status,
-        pages=pages,
-        clauses=clauses,
-        warnings=warnings,
-    )
-
-    # 5. Fast canonical extraction for field lookup
+    # Fast canonical extraction for field lookup
     candidates = await extract_candidate_facts(doc_tree)
     structured_agreement = resolve_provenance(candidates, doc_tree)
 
-    # 6. Parse optional conversation history
+    # Parse optional conversation history
     parsed_history = []
     if conversation_history:
         try:
@@ -227,7 +170,7 @@ async def ask_document(
         except Exception:
             parsed_history = []
 
-    # 7. Route, retrieve, verify, and generate answer
+    # Route, retrieve, verify, and generate answer
     qa_service = QAService()
     response = await qa_service.answer_question(
         document_tree=doc_tree,
@@ -252,34 +195,13 @@ async def detect_document_contradictions(
     - Resolves dual physical provenance (source_a and source_b).
     - Identifies conflicts without legal adjudication or validity ratings.
     """
-    # 1. Ingestion security & integrity validation
-    content, sha256_hash, filename = await validate_and_read_pdf(file)
-    doc_id = f"doc_{uuid.uuid4().hex[:12]}"
+    doc_tree = await _parse_upload_to_tree(file)
 
-    # 2. Geometric parsing via PyMuPDF
-    pages, parsing_status, warnings = parse_pdf_geometry(content)
-
-    # 3. Deterministic clause boundary segmentation
-    clauses = segment_clauses(pages)
-
-    # 4. Assemble hierarchical DocumentTree
-    doc_tree = DocumentTree(
-        document_id=doc_id,
-        filename=filename,
-        sha256_hash=sha256_hash,
-        file_size_bytes=len(content),
-        page_count=len(pages),
-        parsing_status=parsing_status,
-        pages=pages,
-        clauses=clauses,
-        warnings=warnings,
-    )
-
-    # 5. Extract candidate facts & provenance for acceleration
+    # Extract candidate facts & provenance for acceleration
     candidates = await extract_candidate_facts(doc_tree)
     structured_agreement = resolve_provenance(candidates, doc_tree)
 
-    # 6. Run contradiction detection
+    # Run contradiction detection
     detector = ContradictionDetector()
     return detector.detect_contradictions(doc_tree, structured_agreement)
 
@@ -295,53 +217,28 @@ async def generate_advocate_pack_endpoint(
     - Assembles deterministic evidentiary dossier with dual physical provenance.
     - Zero generative hallucination; zero legal advice or validity adjudication.
     """
-    # 1. Ingestion security & integrity validation
-    content, sha256_hash, filename = await validate_and_read_pdf(file)
-    doc_id = f"doc_{uuid.uuid4().hex[:12]}"
+    doc_tree = await _parse_upload_to_tree(file)
 
-    # 2. Geometric parsing via PyMuPDF
-    pages, parsing_status, warnings = parse_pdf_geometry(content)
-
-    # 3. Deterministic clause boundary segmentation
-    clauses = segment_clauses(pages)
-
-    # 4. Assemble hierarchical DocumentTree
-    doc_tree = DocumentTree(
-        document_id=doc_id,
-        filename=filename,
-        sha256_hash=sha256_hash,
-        file_size_bytes=len(content),
-        page_count=len(pages),
-        parsing_status=parsing_status,
-        pages=pages,
-        clauses=clauses,
-        warnings=warnings,
-    )
-
-    # 5. Extract candidate facts & provenance
+    # Extract candidate facts & provenance
     candidates = await extract_candidate_facts(doc_tree)
     structured_agreement = resolve_provenance(candidates, doc_tree)
 
-    # 6. Run verification gate
+    # Run verification gate
     gate = VerificationGate()
     verification_res = await gate.verify_agreement(structured_agreement, doc_tree)
 
-    # 7. Run contradiction detector
+    # Run contradiction detector
     detector = ContradictionDetector()
     contradiction_res = detector.detect_contradictions(doc_tree, structured_agreement)
 
-    # 8. Deterministically compile AdvocatePack
+    # Deterministically compile AdvocatePack
     return build_advocate_pack(
         document_tree=doc_tree,
         verification_result=verification_res,
         contradiction_response=contradiction_res,
-        document_name=filename,
+        document_name=doc_tree.filename,
     )
 
-
-import os
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 
 # Static assets & SPA fallback for production deployment
 _frontend_dist = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend", "dist"))

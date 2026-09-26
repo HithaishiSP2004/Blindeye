@@ -15,7 +15,6 @@ from backend.verification.contradiction_hook import ContradictionHook
 from backend.verification.deterministic_checker import DeterministicChecker
 from backend.verification.refusal_engine import RefusalEngine
 from backend.verification.semantic_evaluator import (
-    DeterministicMockSemanticEvaluator,
     GeminiSemanticEvaluator,
     SemanticEvaluator,
 )

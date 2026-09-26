@@ -1,6 +1,5 @@
 import logging
-from typing import Dict, List, Optional
-from backend.models.document import DocumentTree
+from typing import List
 from backend.models.extraction import ProvenancedValue, StructuredAgreement
 from backend.models.verification import (
     AtomicClaim,
