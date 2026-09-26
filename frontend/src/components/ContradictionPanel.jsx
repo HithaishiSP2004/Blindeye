@@ -160,7 +160,7 @@ export default function ContradictionPanel({ contradictionData, onSelectSource, 
               margin: '0 0 6px 0',
             }}
           >
-            No conflicting statements detected.
+            No conflicting covenants identified across parsed clauses.
           </p>
           <p style={{ fontSize: '11px', color: 'var(--ink-tertiary)', margin: 0 }}>
             All extracted contractual provisions maintain consistent values and actor attributions.

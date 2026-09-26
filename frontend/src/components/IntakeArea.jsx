@@ -52,12 +52,12 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
               marginBottom: '3px',
             }}
           >
-            Read The Agreement
+            EVIDENCE FIRST · RESIDENTIAL AGREEMENT INTELLIGENCE
           </span>
           <h2
             className="font-serif"
             style={{
-              fontSize: '17px',
+              fontSize: '18px',
               fontWeight: 600,
               color: 'var(--ink-primary)',
               lineHeight: 1.25,
@@ -79,9 +79,13 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
         </div>
 
         {/* Dropzone & Quick-Load Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div
+          className="intake-buttons-group"
+          style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}
+        >
           {/* Physical Drop Target */}
           <label
+            aria-label="Upload PDF Agreement"
             onDragOver={(e) => {
               e.preventDefault();
               setIsDragOver(true);
@@ -94,10 +98,10 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
               gap: '10px',
               padding: '10px 18px',
               backgroundColor: isDragOver ? 'var(--accent-soft)' : 'var(--sheet-bg)',
-              border: `1px ${isDragOver ? 'dashed var(--accent-legal)' : 'solid var(--divider-line)'}`,
-              borderRadius: '2px',
+              border: `1px ${isDragOver ? 'dashed var(--accent-legal)' : 'solid var(--accent-legal)'}`,
+              borderRadius: '3px',
               cursor: 'pointer',
-              boxShadow: 'var(--panel-shadow)',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
               transition: 'all 0.18s ease',
             }}
           >
@@ -107,15 +111,16 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
               onChange={handleFileInput}
               style={{ display: 'none' }}
               disabled={loading}
+              aria-label="Upload Agreement PDF File"
             />
             <span
               style={{
                 fontSize: '13px',
-                color: isDragOver ? 'var(--accent-legal)' : 'var(--ink-primary)',
-                fontWeight: 500,
+                color: 'var(--accent-legal)',
+                fontWeight: 600,
               }}
             >
-              {loading ? 'Ingesting PDF...' : 'Drop PDF or Choose File'}
+              {loading ? 'Ingesting Agreement...' : 'Upload Agreement (PDF)'}
             </span>
             <span
               style={{
@@ -126,7 +131,7 @@ export default function IntakeArea({ onParseFile, onLoadGolden, onLoadConflictin
                 paddingLeft: '8px',
               }}
             >
-              PDF · Max 15 MB
+              Max 15 MB
             </span>
           </label>
 
