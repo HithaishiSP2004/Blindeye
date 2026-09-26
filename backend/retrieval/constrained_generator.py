@@ -136,21 +136,31 @@ VERIFIED DOCUMENT EVIDENCE:
 
 ANSWER:"""
 
-            response = await client.aio.models.generate_content(
-                model=settings.GEMINI_MODEL,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    temperature=0.0,
-                    max_output_tokens=256,
-                ),
-            )
+            models_to_try = settings.gemini_models_cascade
+            for model_name in models_to_try:
+                try:
+                    response = await client.aio.models.generate_content(
+                        model=model_name,
+                        contents=prompt,
+                        config=types.GenerateContentConfig(
+                            temperature=0.0,
+                            max_output_tokens=256,
+                        ),
+                    )
 
-            generated_text = (response.text or "").strip()
-            if generated_text:
-                return generated_text
+                    generated_text = (response.text or "").strip()
+                    if generated_text:
+                        return generated_text
+
+                except Exception as exc:
+                    logger.warning(
+                        f"Gemini generation failed on model '{model_name}': {exc}. Trying next fallback model if available."
+                    )
+
+            logger.warning(f"All live Gemini models ({models_to_try}) failed, falling back to deterministic.")
 
         except Exception as exc:
-            logger.warning(f"Gemini generation failed, falling back to deterministic: {exc}")
+            logger.warning(f"Gemini client setup or generation failed, falling back to deterministic: {exc}")
 
-        # Fallback to deterministic generator if LLM fails
+        # Fallback to deterministic generator if all LLMs fail
         return await self.fallback.generate_answer(question, evidence, status, refusal_reason)

@@ -20,7 +20,11 @@ class Settings(BaseSettings):
     )
     GEMINI_MODEL: str = Field(
         default="gemini-3.8-flash",
-        description="Configurable Gemini model identifier (e.g. gemini-3.8-flash, gemini-3.5-flash)",
+        description="Configurable Gemini primary model identifier (e.g. gemini-3.8-flash)",
+    )
+    GEMINI_FALLBACK_MODELS: str = Field(
+        default="gemini-3.7-flash,gemini-3.6-flash",
+        description="Comma-separated fallback Gemini model identifiers in priority order",
     )
 
     MAX_FILE_SIZE_MB: int = Field(default=15, description="Maximum file upload size in MB")
@@ -36,6 +40,20 @@ class Settings(BaseSettings):
     def cors_origins_list(self) -> List[str]:
         """Convert comma-separated CORS string to clean list."""
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
+
+    @property
+    def gemini_fallback_models_list(self) -> List[str]:
+        """Convert comma-separated fallback models string to clean list."""
+        return [m.strip() for m in self.GEMINI_FALLBACK_MODELS.split(",") if m.strip()]
+
+    @property
+    def gemini_models_cascade(self) -> List[str]:
+        """Return full cascade of Gemini models to attempt: [primary, *fallbacks] without duplicates."""
+        models = [self.GEMINI_MODEL]
+        for fb in self.gemini_fallback_models_list:
+            if fb not in models:
+                models.append(fb)
+        return models
 
 
 settings = Settings()

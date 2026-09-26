@@ -44,10 +44,9 @@ async def health_check():
         "status": "ok",
         "app": "Evidence-First Legal AI",
         "environment": settings.APP_ENV,
-        "phase": "8 - Advocate Preparation Pack",
-
-
+        "phase": "10 - Final Showcase & Product Readiness",
         "gemini_model": settings.GEMINI_MODEL,
+        "gemini_fallback_models": settings.gemini_fallback_models_list,
         "limits": {
             "max_file_size_mb": settings.MAX_FILE_SIZE_MB,
             "max_page_count": settings.MAX_PAGE_COUNT,

@@ -245,26 +245,45 @@ async def extract_candidate_facts(document_tree: DocumentTree) -> CandidateExtra
             temperature=0.0,
         )
 
-        response = await client.aio.models.generate_content(
-            model=model_name,
-            contents=prompt_text,
-            config=config,
+        models_to_try = settings.gemini_models_cascade
+        last_error = None
+
+        for model_name in models_to_try:
+            try:
+                logger.info(f"Attempting candidate extraction with Gemini model: {model_name}")
+                response = await client.aio.models.generate_content(
+                    model=model_name,
+                    contents=prompt_text,
+                    config=config,
+                )
+
+                # Primary path: native parsed object
+                if hasattr(response, "parsed") and response.parsed is not None:
+                    if isinstance(response.parsed, CandidateExtractionResult):
+                        return response.parsed
+                    return CandidateExtractionResult.model_validate(response.parsed)
+
+                # Defensive fallback: parse JSON response text
+                raw_text = response.text or ""
+                clean_text = raw_text.strip()
+                if clean_text.startswith("```"):
+                    clean_text = re.sub(r"^```(?:json)?\s*|\s*```$", "", clean_text, flags=re.DOTALL).strip()
+
+                return CandidateExtractionResult.model_validate_json(clean_text)
+
+            except Exception as exc:
+                last_error = exc
+                logger.warning(
+                    f"Gemini extraction failed on model '{model_name}': {exc}. Trying next fallback model if available."
+                )
+
+        logger.error(
+            f"All live Gemini models ({models_to_try}) failed. Last error: {last_error}. "
+            "Falling back to deterministic extractor.",
+            exc_info=True,
         )
-
-        # Primary path: native parsed object
-        if hasattr(response, "parsed") and response.parsed is not None:
-            if isinstance(response.parsed, CandidateExtractionResult):
-                return response.parsed
-            return CandidateExtractionResult.model_validate(response.parsed)
-
-        # Defensive fallback: parse JSON response text
-        raw_text = response.text or ""
-        clean_text = raw_text.strip()
-        if clean_text.startswith("```"):
-            clean_text = re.sub(r"^```(?:json)?\s*|\s*```$", "", clean_text, flags=re.DOTALL).strip()
-
-        return CandidateExtractionResult.model_validate_json(clean_text)
+        return _mock_extract_candidates(document_tree)
 
     except Exception as exc:
-        logger.error(f"Live Gemini extraction failed: {exc}. Falling back to deterministic extractor.", exc_info=True)
+        logger.error(f"Live Gemini extraction setup failed: {exc}. Falling back to deterministic extractor.", exc_info=True)
         return _mock_extract_candidates(document_tree)

@@ -112,22 +112,40 @@ SOURCE PASSAGE:
                 temperature=0.0,
             )
 
-            response = await client.aio.models.generate_content(
-                model=settings.GEMINI_MODEL,
-                contents=prompt,
-                config=config,
+            models_to_try = settings.gemini_models_cascade
+            last_error = None
+
+            for model_name in models_to_try:
+                try:
+                    response = await client.aio.models.generate_content(
+                        model=model_name,
+                        contents=prompt,
+                        config=config,
+                    )
+
+                    if hasattr(response, "parsed") and response.parsed is not None:
+                        if isinstance(response.parsed, SemanticEvaluationResult):
+                            return response.parsed
+                        return SemanticEvaluationResult.model_validate(response.parsed)
+
+                    clean_text = (response.text or "").strip()
+                    return SemanticEvaluationResult.model_validate_json(clean_text)
+
+                except Exception as exc:
+                    last_error = exc
+                    logger.warning(
+                        f"Semantic evaluation failed on model '{model_name}': {exc}. Trying next fallback model if available."
+                    )
+
+            logger.warning(f"All live Gemini models ({models_to_try}) failed: {last_error}. Marking UNRESOLVED.", exc_info=True)
+            return SemanticEvaluationResult(
+                decision="UNRESOLVED",
+                reason_code="SEMANTIC_EVALUATION_FAILED",
+                rationale=str(last_error),
             )
 
-            if hasattr(response, "parsed") and response.parsed is not None:
-                if isinstance(response.parsed, SemanticEvaluationResult):
-                    return response.parsed
-                return SemanticEvaluationResult.model_validate(response.parsed)
-
-            clean_text = (response.text or "").strip()
-            return SemanticEvaluationResult.model_validate_json(clean_text)
-
         except Exception as exc:
-            logger.warning(f"Semantic evaluation failed: {exc}. Marking UNRESOLVED.", exc_info=True)
+            logger.warning(f"Semantic evaluation setup failed: {exc}. Marking UNRESOLVED.", exc_info=True)
             return SemanticEvaluationResult(
                 decision="UNRESOLVED",
                 reason_code="SEMANTIC_EVALUATION_FAILED",

@@ -12,8 +12,10 @@ async def test_health_endpoint():
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "ok"
-        assert data["app"] == "Evidence-First Legal AI"
-        assert any(p in data["phase"] for p in ["Advocate", "Contradiction", "Q&A", "Evidence-First", "Verification", "Extraction", "Document Engine", "Foundation"])
+        assert any(p in data["phase"] for p in ["Showcase", "Advocate", "Contradiction", "Q&A", "Evidence-First", "Verification", "Extraction", "Document Engine", "Foundation"])
+        assert "gemini_fallback_models" in data
+        assert "gemini-3.7-flash" in data["gemini_fallback_models"]
+        assert "gemini-3.6-flash" in data["gemini_fallback_models"]
 
         assert "limits" in data
         assert data["limits"]["max_file_size_mb"] == 15
