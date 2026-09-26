@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import FactRow from './FactRow';
 import QuestionDesk from './QuestionDesk';
+import ContradictionPanel from './ContradictionPanel';
 
 const FACT_GROUPS = [
   {
@@ -35,8 +36,11 @@ export default function EvidencePanel({
   onHoverFact,
   rawFile,
   onNavigateToCitation,
+  contradictionData,
+  selectedContradictionSource,
+  onSelectContradictionSource,
 }) {
-  const [activeTab, setActiveTab] = useState('facts'); // 'facts', 'clauses', or 'qa'
+  const [activeTab, setActiveTab] = useState('facts'); // 'facts', 'clauses', 'qa', or 'contradictions'
   const [statusFilter, setStatusFilter] = useState('ALL'); // 'ALL', 'VERIFIED', 'NOT_FOUND', 'UNSUPPORTED', 'AMBIGUOUS'
 
 
@@ -179,6 +183,42 @@ export default function EvidencePanel({
               }}
             >
               Ask Agreement
+            </button>
+            <button
+              id="tab-contradictions"
+              onClick={() => setActiveTab('contradictions')}
+              style={{
+                fontSize: '11px',
+                fontWeight: 600,
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                padding: '6px 14px',
+                borderRadius: '3px',
+                border: activeTab === 'contradictions' ? '1px solid var(--accent-legal)' : '1px solid var(--divider-line)',
+                backgroundColor: activeTab === 'contradictions' ? 'var(--accent-legal)' : 'var(--surface-bg)',
+                color: activeTab === 'contradictions' ? '#FFFFFF' : 'var(--ink-secondary)',
+                cursor: 'pointer',
+                transition: 'all 120ms ease',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              Contradictions
+              {contradictionData && (
+                <span
+                  style={{
+                    backgroundColor: contradictionData.total_conflicts > 0 ? '#DC2626' : 'rgba(0,0,0,0.1)',
+                    color: contradictionData.total_conflicts > 0 ? '#FFFFFF' : 'inherit',
+                    borderRadius: '10px',
+                    padding: '1px 6px',
+                    fontSize: '10px',
+                    fontWeight: 700,
+                  }}
+                >
+                  {contradictionData.total_conflicts}
+                </span>
+              )}
             </button>
           </div>
 
@@ -444,6 +484,15 @@ export default function EvidencePanel({
             onNavigateToCitation={onNavigateToCitation}
           />
         </div>
+      )}
+
+      {/* VIEW 4: CONTRADICTION & EVIDENCE RELATIONSHIPS (Phase 6) */}
+      {activeTab === 'contradictions' && (
+        <ContradictionPanel
+          contradictionData={contradictionData}
+          onSelectSource={onSelectContradictionSource}
+          selectedSource={selectedContradictionSource}
+        />
       )}
     </div>
   );

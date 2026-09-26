@@ -115,4 +115,26 @@ export async function askDocument(file, question, conversationHistory = []) {
   }
 }
 
+export async function detectContradictions(file) {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${API_BASE_URL}/documents/contradictions`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.detail || `Contradiction detection failed with HTTP ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
+
 

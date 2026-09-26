@@ -41,6 +41,14 @@ from backend.models.qa import (
     RetrievalMetadata,
     RetrievalMethod,
 )
+from backend.models.contradiction import (
+    ContradictionActor,
+    ContradictionEvidence,
+    ContradictionFinding,
+    ContradictionResponse,
+    ContradictionStatus,
+    ContradictionSubject,
+)
 
 __all__ = [
     "BoundingBox",
@@ -76,5 +84,11 @@ __all__ = [
     "RetrievalMetadata",
     "QARequest",
     "QAResponse",
+    "ContradictionStatus",
+    "ContradictionActor",
+    "ContradictionSubject",
+    "ContradictionEvidence",
+    "ContradictionFinding",
+    "ContradictionResponse",
 ]
 

@@ -9,17 +9,19 @@ from backend.engine.clause_segmenter import segment_clauses
 from backend.engine.pdf_parser import parse_pdf_geometry
 from backend.extraction.provenance_resolver import resolve_provenance
 from backend.extraction.structured_extractor import extract_candidate_facts
+from backend.models.contradiction import ContradictionResponse
 from backend.models.document import DocumentTree
 from backend.models.extraction import StructuredAgreementResult
 from backend.models.qa import QAResponse
 from backend.models.verification import DocumentVerificationResult
+from backend.contradiction.detector import ContradictionDetector
 from backend.retrieval.qa_service import QAService
 from backend.verification.verification_gate import VerificationGate
 
 app = FastAPI(
     title="Evidence-First Residential Agreement Intelligence",
     description="Verification-first document intelligence engine for Indian residential agreements.",
-    version="0.5.0",
+    version="0.6.0",
 )
 
 
@@ -40,7 +42,8 @@ async def health_check():
         "status": "ok",
         "app": "Evidence-First Legal AI",
         "environment": settings.APP_ENV,
-        "phase": "5 - Evidence-First Q&A",
+        "phase": "6 - Contradiction Engine",
+
 
         "gemini_model": settings.GEMINI_MODEL,
         "limits": {
@@ -230,6 +233,51 @@ async def ask_document(
     )
 
     return response
+
+
+@app.post("/documents/contradictions", response_model=ContradictionResponse, tags=["Contradictions"])
+async def detect_document_contradictions(
+    file: UploadFile = File(...),
+):
+    """Stateless contradiction intelligence endpoint for Indian residential agreements.
+
+    Enforces Phase 6 Architecture:
+    - Stateless API accepting multipart/form-data.
+    - Slices candidate statements directly from DocumentTree (Correction 1).
+    - Detects contractual conflicts across notice period, rent, deposit, tenure, repairs.
+    - Resolves dual physical provenance (source_a and source_b).
+    - Identifies conflicts without legal adjudication or validity ratings.
+    """
+    # 1. Ingestion security & integrity validation
+    content, sha256_hash, filename = await validate_and_read_pdf(file)
+    doc_id = f"doc_{uuid.uuid4().hex[:12]}"
+
+    # 2. Geometric parsing via PyMuPDF
+    pages, parsing_status, warnings = parse_pdf_geometry(content)
+
+    # 3. Deterministic clause boundary segmentation
+    clauses = segment_clauses(pages)
+
+    # 4. Assemble hierarchical DocumentTree
+    doc_tree = DocumentTree(
+        document_id=doc_id,
+        filename=filename,
+        sha256_hash=sha256_hash,
+        file_size_bytes=len(content),
+        page_count=len(pages),
+        parsing_status=parsing_status,
+        pages=pages,
+        clauses=clauses,
+        warnings=warnings,
+    )
+
+    # 5. Extract candidate facts & provenance for acceleration
+    candidates = await extract_candidate_facts(doc_tree)
+    structured_agreement = resolve_provenance(candidates, doc_tree)
+
+    # 6. Run contradiction detection
+    detector = ContradictionDetector()
+    return detector.detect_contradictions(doc_tree, structured_agreement)
 
 
 if __name__ == "__main__":

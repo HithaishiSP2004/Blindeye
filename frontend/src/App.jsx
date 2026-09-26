@@ -3,7 +3,7 @@ import Header from './components/Header';
 import IntakeArea from './components/IntakeArea';
 import DocumentSurface from './components/DocumentSurface';
 import EvidencePanel from './components/EvidencePanel';
-import { extractDocument, verifyDocument } from './api/client';
+import { extractDocument, verifyDocument, detectContradictions } from './api/client';
 
 export default function App() {
   const [theme, setTheme] = useState('light');
@@ -11,6 +11,8 @@ export default function App() {
   const [documentData, setDocumentData] = useState(null);
   const [structuredAgreement, setStructuredAgreement] = useState(null);
   const [verificationResult, setVerificationResult] = useState(null);
+  const [contradictionData, setContradictionData] = useState(null);
+  const [selectedContradictionSource, setSelectedContradictionSource] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeClauseId, setActiveClauseId] = useState(null);
@@ -37,15 +39,21 @@ export default function App() {
     setError(null);
     setCurrentFile(file);
     try {
-      // Execute both extraction (for DocumentTree & Candidate Provenance) and Verification Gate (Phase 4)
-      const [extractResult, verifyResult] = await Promise.all([
+      // Execute extraction (DocumentTree), Verification Gate (Phase 4), and Contradiction Engine (Phase 6) in parallel
+      const [extractResult, verifyResult, contradictionResult] = await Promise.all([
         extractDocument(file),
         verifyDocument(file),
+        detectContradictions(file).catch((cErr) => {
+          console.warn('Contradiction analysis note:', cErr);
+          return null;
+        }),
       ]);
 
       setDocumentData(extractResult.document_tree);
       setStructuredAgreement(extractResult.structured_agreement);
       setVerificationResult(verifyResult);
+      setContradictionData(contradictionResult);
+      setSelectedContradictionSource(null);
 
       setActiveClauseId(null);
       setHoveredClauseId(null);
@@ -55,6 +63,24 @@ export default function App() {
       setError(err.message || 'Failed to verify legal agreement.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSelectContradictionSource = (source) => {
+    if (!source) {
+      setSelectedContradictionSource(null);
+      return;
+    }
+    setSelectedContradictionSource(source);
+    if (source.clause_id) {
+      setActiveClauseId(source.clause_id);
+    }
+    setActiveFactField(null);
+    if (source.page_number) {
+      const pageEl = document.getElementById(`pdf-page-${source.page_number}`);
+      if (pageEl) {
+        pageEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   };
 
@@ -215,6 +241,7 @@ export default function App() {
             onHoverClause={setHoveredClauseId}
             onSelectClause={handleSelectClause}
             onSelectFact={handleSelectFact}
+            selectedContradictionSource={selectedContradictionSource}
           />
         </div>
 
@@ -241,6 +268,9 @@ export default function App() {
             onHoverFact={handleHoverFact}
             rawFile={currentFile}
             onNavigateToCitation={handleNavigateToCitation}
+            contradictionData={contradictionData}
+            selectedContradictionSource={selectedContradictionSource}
+            onSelectContradictionSource={handleSelectContradictionSource}
           />
         </div>
       </div>

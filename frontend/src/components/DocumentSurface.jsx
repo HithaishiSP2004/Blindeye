@@ -31,6 +31,7 @@ export default function DocumentSurface({
   onHoverClause,
   onSelectClause,
   onSelectFact,
+  selectedContradictionSource,
 }) {
   const containerRef = useRef(null);
 
@@ -323,6 +324,43 @@ export default function DocumentSurface({
                     onClick={() => onSelectFact(key, fact)}
                   />
                 ))}
+
+                {/* Contradiction Evidence Source Box (Bilateral Dual Physical Provenance) */}
+                {selectedContradictionSource?.bbox && selectedContradictionSource.bbox.page === page.page_number && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: `${(selectedContradictionSource.bbox.x0 / pageWidth) * 100}%`,
+                      top: `${(selectedContradictionSource.bbox.y0 / pageHeight) * 100}%`,
+                      width: `${((selectedContradictionSource.bbox.x1 - selectedContradictionSource.bbox.x0) / pageWidth) * 100}%`,
+                      height: `${((selectedContradictionSource.bbox.y1 - selectedContradictionSource.bbox.y0) / pageHeight) * 100}%`,
+                      border: '2px solid #DC2626',
+                      backgroundColor: 'rgba(220, 38, 38, 0.16)',
+                      borderRadius: '2px',
+                      pointerEvents: 'none',
+                      boxShadow: '0 0 0 2px rgba(220, 38, 38, 0.25)',
+                      zIndex: 20,
+                    }}
+                  >
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '-18px',
+                        left: 0,
+                        backgroundColor: '#DC2626',
+                        color: '#FFFFFF',
+                        fontSize: '9px',
+                        fontWeight: 700,
+                        padding: '1px 6px',
+                        borderRadius: '2px',
+                        letterSpacing: '0.04em',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      CONTRADICTION SOURCE ({selectedContradictionSource.actor || 'ACTOR'})
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

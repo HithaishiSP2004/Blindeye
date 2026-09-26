@@ -13,7 +13,7 @@ async def test_health_endpoint():
         data = response.json()
         assert data["status"] == "ok"
         assert data["app"] == "Evidence-First Legal AI"
-        assert any(p in data["phase"] for p in ["Q&A", "Evidence-First", "Verification", "Extraction", "Document Engine", "Foundation"])
+        assert any(p in data["phase"] for p in ["Contradiction", "Q&A", "Evidence-First", "Verification", "Extraction", "Document Engine", "Foundation"])
 
         assert "limits" in data
         assert data["limits"]["max_file_size_mb"] == 15
