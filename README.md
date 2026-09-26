@@ -62,7 +62,7 @@ Blind Eye replaces unanchored generation with a deterministic, geometry-first ev
 
 $$\mathbf{DOCUMENT} \longrightarrow \mathbf{SOURCE} \longrightarrow \mathbf{CLAIM} \longrightarrow \mathbf{VERIFICATION} \longrightarrow \mathbf{ANSWER}$$
 
-* **DocumentTree is the authoritative evidence layer.** Physical character positions, line boundaries, and clause hierarchies extracted directly from the PDF layout form the sole ground truth.
+* **DocumentTree is the authoritative evidence layer.** Physical character positions, line boundaries, and clause hierarchies extracted directly from the PDF layout are the canonical source used for provenance and verification.
 * **Structured extraction is enrichment, not authority.** LLMs serve exclusively as candidate extractors; no extracted value is presented as verified until it crosses the deterministic verification gate.
 
 ---
@@ -115,7 +115,7 @@ flowchart TD
     H -- Exact Substring & BBox Found --> I[Status: VERIFIED]
     H -- Candidate Not Grounded --> J[Status: UNSUPPORTED]
     H -- Clause Absent --> K[Status: NO_SUPPORTING_PASSAGE]
-    I --> L[Cinematic Evidence Workspace]
+    I --> L[Evidence Intelligence Workspace]
     I --> M[Advocate Preparation Pack]
     I --> N[Evidence-First Q&A Desk]
     F --> L
@@ -241,7 +241,7 @@ The system is evaluated against a ten-part test corpus covering standard, degrad
 
 | Corpus | Description | Test Focus | Result |
 | :--- | :--- | :--- | :--- |
-| **Corpus A** | Golden Standard Rental Agreement | Standard Bangalore 11-month agreement; 16/16 structured fields. | Verified with dual provenance. |
+| **Corpus A** | Golden Standard Rental Agreement | Standard 11-month residential rental agreement; 16/16 structured fields. | Verified with dual provenance. |
 | **Corpus B** | Multi-Page Agreement (3 pages) | Multi-page text distribution and inter-page cross-references. | Clause boundaries preserved across pages. |
 | **Corpus C** | Internal Contradiction Fixture | Divergent rent covenants with conflicting terms. | Contradiction identified; bilateral navigation active. |
 | **Corpus D** | Missing Protections Agreement | Agreement omitting standard painting, lock-in, and renewal terms. | Deterministically flagged as `NO_SUPPORTING_PASSAGE`. |
@@ -269,10 +269,10 @@ The following execution times were recorded on standard local development hardwa
 * **Total Local Engine Execution Time:** **`~10.39 ms`**
 
 ### Frontend Production Bundle (Vite / Rollup)
-* **Compiled JavaScript:** `217.83 kB` (Gzipped: **`61.45 kB`**)
-* **Compiled CSS:** `5.34 kB` (Gzipped: **`1.83 kB`**)
-* **Entry HTML:** `0.94 kB` (Gzipped: **`0.52 kB`**)
-* **Total Compressed Asset Footprint:** **`~63.80 kB`**
+* **Compiled JavaScript:** `219.88 kB` (Gzipped: **`62.23 kB`**)
+* **Compiled CSS:** `5.68 kB` (Gzipped: **`1.93 kB`**)
+* **Entry HTML:** `1.12 kB` (Gzipped: **`0.59 kB`**)
+* **Total Compressed Asset Footprint:** **`~64.75 kB`**
 
 *Note: Benchmarks reflect local execution on the test corpus. Production network latencies and external API response times may vary.*
 
@@ -374,7 +374,7 @@ Blindeye/
 │   │   └── main.jsx            # React root mount
 │   ├── index.html              # HTML entry point with display typography
 │   ├── package.json            # Frontend dependencies and build scripts
-│   └── vercel.json             # Vercel SPA routing configuration (optional split deploy)
+│   └── vercel.json             # Optional frontend routing configuration
 ├── tests/
 │   ├── fixtures/               # Evaluation PDFs (golden, multipage, adversarial, sparse)
 │   ├── generate_fixtures.py    # Deterministic evaluation fixture generator
@@ -510,8 +510,8 @@ The repository also includes [`render.yaml`](render.yaml) and [`Procfile`](Procf
 ## 20. Showcase Walkthrough (2–3 Minutes)
 
 1. **Workspace Landing:** Open the workspace ([`https://blindeye.onrender.com/workspace`](https://blindeye.onrender.com/workspace)). Notice the **Golden Agreement Demo** auto-loads with observable pipeline stages (`PARSING DOCUMENT → MAPPING CLAUSES → INDEXING EVIDENCE → READY`).
-2. **Physical Traceability:** Click **Monthly Rent** (`₹35,000/-`). The document canvas smoothly scrolls and highlights **Clause 1** with amber borders on Page 1.
-3. **Factual Q&A:** Open the **Ask Agreement** tab. Click the suggested chip `"What is the monthly rent?"`. The system provides a verified response citing Clause 1 with a direct link to the physical source.
+2. **Physical Traceability:** Click **Monthly Rent** (`₹35,000/-`). The document canvas smoothly scrolls and highlights **Clause 2.1** with amber borders on Page 1.
+3. **Factual Q&A:** Open the **Ask Agreement** tab. Click the suggested chip `"What is the monthly rent?"`. The system provides a verified response citing Clause 2.1 with a direct link to the physical source.
 4. **Boundary Defense:** Click the boundary query `"Is the termination clause legally enforceable?"`. Observe the system's honest refusal: it declines to predict legal outcomes or provide statutory advice.
 5. **Comparative Divergence:** Click **`Load Conflicting Agreement`** (or Divergent Covenants). Open the **Contradictions** tab to examine the detected textual divergence and use **Source A** / **Source B** to navigate directly to both physical provisions.
 6. **Advocate Dossier:** Open the **Advocate Pack** tab. Review the 4-tier taxonomy badges, footnote citations, and coverage gap checklist. Click **Print / Export Dossier** to observe the clean archival print layout.
@@ -525,7 +525,7 @@ The repository also includes [`render.yaml`](render.yaml) and [`Procfile`](Procf
 * **Motion Communicates Structure:** Smooth scrolling and synchronized highlighting connect structured data points directly to their physical positions on the digital paper surface.
 * **Editorial Digital Paper Palette:** Built with archival paper tones (`--canvas-bg`, `--ink-primary`), restrained serif display typography (Newsreader), and monospace technical details (JetBrains Mono).
 * **Zero Confidence Theater:** No arbitrary percentage confidence dials or vague AI scorecards. A claim is either deterministically verified against source geometry, ambiguous, or unaddressed.
-* **Accessible Double-Coding:** State indicators pair distinct colors with geometric symbols (`●`, `✗`, `◇`, `—`) and descriptive textual labels to ensure full accessibility.
+* **Accessible Double-Coding:** State indicators pair distinct colors with geometric symbols (`●`, `✗`, `◇`, `—`) and descriptive textual labels to improve accessibility without relying on color alone.
 
 ---
 

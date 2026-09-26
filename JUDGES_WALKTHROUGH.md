@@ -39,7 +39,7 @@ Follow these exact steps on the live application to test all core features in un
 ### Step 2: Trace Physical Provenance (Coordinate Bounding Boxes)
 1. In the right-hand **Evidence Index** under the **Factual Claims** tab, click on **`Monthly Rent`** (`₹35,000/- per month`).
 2. **What happens:**
-   - The left document pane smoothly auto-scrolls to Page 1, Clause 3.
+   - The left document pane smoothly auto-scrolls to Page 1, Clause 2.1.
    - An amber geometric bounding box highlights the verbatim source clause directly on the digital paper canvas.
    - A synchronized floating evidence marker displays the field label, verified value, and status.
 3. Click the **`Show Verification Audit`** toggle on the Monthly Rent card.
@@ -54,7 +54,7 @@ Follow these exact steps on the live application to test all core features in un
    - The system retrieves the exact supporting clause via BM25 lexical ranking.
    - A verified response card renders with:
      - Exact grounded answer text.
-     - Clickable source citation pill (`Clause 3 · Page 1`).
+     - Clickable source citation pill (`Clause 2.1 · Page 1`).
      - Clicking the citation pill jumps directly to the physical text on the document sheet.
 4. **Engineering in action:** The question router checks canonical cached extraction first, then executes BM25 search. Conversation history is treated as context only—never as evidence.
 
